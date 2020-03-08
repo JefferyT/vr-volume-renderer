@@ -1,0 +1,7 @@
+406x512x512
+short in hounsfield unit
+air -1000
+water 0
+bone: >200
+softtissue
+
