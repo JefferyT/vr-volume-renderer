@@ -3,10 +3,11 @@
 Properties
 {
 _Radius("Radius", Float) = 1
-_Centre("Centre", Vector) = (0.0,0.0,0.0)
+_Centre("Centre", Vector) = (5.0, 5.0, 5.0)
 }
 SubShader
 {
+	Cull Back
 
 	Pass
 	{
@@ -18,7 +19,7 @@ SubShader
 
 	sampler2D _MainTex;
 	float _Radius;
-	float _Centre;
+	Vector _Centre;
 
 	#define STEPS 64
 	#define STEP_SIZE 0.5
@@ -59,6 +60,7 @@ SubShader
 		float res = raymarchHit(worldPosition, viewDirection);
 		if (res != 0) {
 			return fixed4(0,res,res,1);
+			//return fixed4(_Center, 1.0f);
 		}
 		 else {
 		 return fixed4(1,1,1,1);

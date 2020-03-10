@@ -4,19 +4,23 @@ using UnityEngine;
 
 public class MovePositionShader : MonoBehaviour
 {
+    public float speed;
+    public Renderer rend;
     Material mat;
     Shader shader;
     // Start is called before the first frame update
     void Start()
     {
-        mat = GetComponent<MeshRenderer>().material;
-        shader = Shader.Find("Custom/BALLSHADER");
+        rend = GetComponent<Renderer>();
+        rend.material.shader = Shader.Find("Custom/BALLSHADER");
+
     }
 
     // Update is called once per frame
     void Update()
     {
         Vector3 pos = transform.position;
-        shader.SetGlobalVector("_Center", pos);
+        rend.material.SetVector("_Centre", pos);
+        transform.Rotate(Vector3.one, Time.deltaTime * speed);
     }
 }
