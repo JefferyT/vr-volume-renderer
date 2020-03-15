@@ -9,6 +9,12 @@ UnityRayMarching/[Bb]uild/
 UnityRayMarching/[Bb]uilds/
 UnityRayMarching/[Ll]ogs/
 UnityRayMarching/[Uu]ser[Ss]ettings/
+UnityRayMarching/Assets/MixedRealityToolkit/
+UnityRayMarching/Assets/MixedRealityToolkit.Generated/
+UnityRayMarching/Assets/MixedRealityToolkit.Providers/
+UnityRayMarching/Assets/MixedRealityToolkit.SDK/
+UnityRayMarching/Assets/MixedRealityToolkit.Services/
+UnityRayMarching/Assets/Oculus/
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data

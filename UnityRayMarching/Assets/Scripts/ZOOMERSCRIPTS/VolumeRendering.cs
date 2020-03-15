@@ -31,8 +31,11 @@ namespace VolumeRendering
         protected virtual void Start()
         {
             material = new Material(shader);
-            GetComponent<MeshFilter>().sharedMesh = Build();
+            Mesh mesh = Build();
+            GetComponent<MeshFilter>().sharedMesh = mesh;
             GetComponent<MeshRenderer>().sharedMaterial = material;
+            //GetComponent<MeshCollider>().sharedMesh = mesh;
+            
         }
 
         protected void Update()
