@@ -24,6 +24,7 @@ namespace VolumeRendering
         [Range(0f, 1f)] public float sliceXMin = 0.0f, sliceXMax = 1.0f;
         [Range(0f, 1f)] public float sliceYMin = 0.0f, sliceYMax = 1.0f;
         [Range(0f, 1f)] public float sliceZMin = 0.0f, sliceZMax = 1.0f;
+        [Range(1f, 5f)] public float pointer_intensity = 2f;
         public Quaternion axis = Quaternion.identity;
 
         public Texture volume;
@@ -48,6 +49,7 @@ namespace VolumeRendering
             material.SetVector("_SliceMax", new Vector3(sliceXMax, sliceYMax, sliceZMax));
 
             material.SetMatrix("_AxisRotationMatrix", Matrix4x4.Rotate(axis));
+            material.SetFloat("_PointerIntensity", pointer_intensity);
         }
 
         Mesh Build()

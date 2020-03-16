@@ -8,6 +8,8 @@
 		_Threshold("Threshold", Range(0.0, 1.0)) = 0.95
 		_SliceMin("Slice min", Vector) = (0.0, 0.0, 0.0, -1.0)
 		_SliceMax("Slice max", Vector) = (1.0, 1.0, 1.0, -1.0)
+		_PointerPosition("Hand Pointer Pos", Vector) = (0.0, 0.0, 0.0, -1.0)
+		_PointerIntensity("Pointer Light Intensity", Range(1.0, 5.0)) = 5.0
 	}
 
 		CGINCLUDE
