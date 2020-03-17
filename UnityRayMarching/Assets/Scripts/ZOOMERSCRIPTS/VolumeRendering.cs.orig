@@ -156,7 +156,6 @@ namespace VolumeRendering
         private Camera vrCam;
         private float width;
         private Mesh mesh;
-        private GameObject rightController;
         protected virtual void Start()
         {
             material = new Material(shader);
@@ -165,8 +164,6 @@ namespace VolumeRendering
             BuildMesh(0.5f);
             //GetComponent<MeshCollider>().sharedMesh = mesh;
             vrCam = Camera.main;
-            
-            
         }
 
         private Mesh BuildMesh (float width)
@@ -184,12 +181,7 @@ namespace VolumeRendering
             {
                 mesh = BuildMesh(width - 0.1f);
             }
-            Vector3 rightPosition = InputTracking.GetLocalPosition(XRNode.RightHand);
-            if (rightPosition != null)
-            {
-                Vector3 controller_local_coord = this.transform.InverseTransformPoint(rightPosition);
-                material.SetVector("_PointerPosition", controller_local_coord);
-            }
+            
             material.SetTexture("_Volume", volume);
             material.SetColor("_Color", color);
             material.SetFloat("_Threshold", threshold);
@@ -201,19 +193,12 @@ namespace VolumeRendering
             material.SetFloat("_PointerIntensity", pointer_intensity);
             material.SetFloat("_ThicknessPlane", plane_thickness);
             material.SetVector("_PlaneScanPara", plane);
+
+            Vector3 rightPosition = InputTracking.GetLocalPosition(XRNode.RightHand);
+            //Debug.Log("right pos " + rightPosition);
+            //  Debug.Log(vrCam.transform.position);
             
-
-            try
-            {
-                Debug.Log(rightController.transform.position + " " + rightController.transform.rotation);
-            }
-            catch (NullReferenceException e)
-            {
-                Console.Write("Right controller not detected, retrying...");
-                rightController = GameObject.Find("Right_Right OpenVR Controller");
-            }
-
-
+           
         }
 
         Mesh Build(float width)
@@ -227,10 +212,19 @@ namespace VolumeRendering
                 new Vector3 ( width,  width,  width),
                 new Vector3 ( width, -width,  width),
                 new Vector3 (-width, -width,  width),
+                //new Vector3 (-0.25f, -0.25f, -0.25f), // 8 0
+                //new Vector3 ( 0.25f, -0.25f, -0.25f), // 9 1
+                //new Vector3 ( 0.25f,  0.25f, -0.25f), // 10 2
+                //new Vector3 (-0.25f,  0.25f, -0.25f), // 11 3
+                //new Vector3 (-0.25f,  0.25f,  0.25f), // 12 4
+                //new Vector3 ( 0.25f,  0.25f,  0.25f), // 13 5
+                //new Vector3 ( 0.25f, -0.25f,  0.25f), // 14 6
+                //new Vector3 (-0.25f, -0.25f,  0.25f), // 15 7
                 
 
             };
             var triangles = new int[] {
+                // outter mesh
                 0, 2, 1,
                 0, 3, 2,
                 2, 3, 4,
@@ -243,7 +237,19 @@ namespace VolumeRendering
                 5, 7, 6,
                 0, 6, 7,
                 0, 1, 6,
-
+                ///// inner mesh
+                //8, 10, 9,
+                //8, 11, 10,
+                //10, 11, 12,
+                //10, 12, 13,
+                //9, 10, 13,
+                //9, 13, 14,
+                //8, 15, 12,
+                //8, 12, 11,
+                //13, 12, 15,
+                //13, 15, 14,
+                //8, 14, 15,
+                //8, 9, 14,
             };
 
             var mesh = new Mesh();
