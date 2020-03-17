@@ -14,6 +14,7 @@ half3 _SliceMin, _SliceMax;
 float4x4 _AxisRotationMatrix;
 half3 _PointerPosition;
 half _PointerIntensity;
+half3 _PlaneScanPara;
 
 struct Ray {
   float3 origin;
