@@ -28,6 +28,14 @@ int Volume::RenderVolume(const char *outputName, int imageWidth, int imageHeight
   return 1;
 }
 
+float TriLinearInterpolation(vec3 point) {
+  return 0.0;
+}
+
+vec3 Gradient(vec3 position, float stepSize) {
+  return vec3(0.0, 0.0, 0.0);
+}
+
 void Volume::PrintSlice(int depth) {
   int start = this->Index(0, 0, depth);
   int end = this->Index(0, 0, depth + 1);
@@ -42,5 +50,5 @@ void Volume::PrintSlice(int depth) {
 }
 
 int Volume::Index(int x, int y, int z) {
-  return x + y * this->size_.x + z * this->size_.x * this->size_.y;
+  return x + y * this->size_.x * this->size_.z + z * this->size_.x;
 }

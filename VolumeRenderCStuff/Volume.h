@@ -38,10 +38,13 @@ class Volume {
   void PrintSlice(int depth);
   
  private:
+  // gets the index of the volume
   int Index(int x, int y, int z);
-  vec4 GetValue();
-  float TriLinearInterpolation();
-  vec3 Gradient(vec3 position);
+  // Interpolates the point at a vec3
+  float TriLinearInterpolation(vec3 position);
+  // gets the gradient at a point
+  vec3 Gradient(vec3 position, float stepSize);
+  int SaveVolume();
   vector<short> raw_volume_;
   vec3 volume_location_;
   vec3 size_;
