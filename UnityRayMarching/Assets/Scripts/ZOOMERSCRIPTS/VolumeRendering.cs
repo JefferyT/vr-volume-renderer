@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using UnityEngine;
+using UnityEngine.XR;
 
 namespace VolumeRendering
 {
@@ -25,6 +26,9 @@ namespace VolumeRendering
         [Range(0f, 1f)] public float sliceYMin = 0.0f, sliceYMax = 1.0f;
         [Range(0f, 1f)] public float sliceZMin = 0.0f, sliceZMax = 1.0f;
         [Range(1f, 5f)] public float pointer_intensity = 2f;
+        [Range(0f, 0.1f)] public float plane_thickness = 0.05f;
+        public Vector4 plane = new Vector4(0, 0, 0, 0);
+
         public Quaternion axis = Quaternion.identity;
 
         public Texture volume;
@@ -50,6 +54,11 @@ namespace VolumeRendering
 
             material.SetMatrix("_AxisRotationMatrix", Matrix4x4.Rotate(axis));
             material.SetFloat("_PointerIntensity", pointer_intensity);
+            material.SetFloat("_ThicknessPlane", plane_thickness);
+            material.SetVector("_PlaneScanPara", plane);
+
+            Vector3 rightPosition = InputTracking.GetLocalPosition(XRNode.RightHand);
+            Debug.Log("right pos " + rightPosition);
         }
 
         Mesh Build()

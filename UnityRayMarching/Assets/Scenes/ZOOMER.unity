@@ -296,7 +296,7 @@ GameObject:
   - component: {fileID: 706833810}
   - component: {fileID: 706833809}
   - component: {fileID: 706833808}
-  - component: {fileID: 706833813}
+  - component: {fileID: 706833816}
   - component: {fileID: 706833807}
   - component: {fileID: 706833812}
   - component: {fileID: 706833811}
@@ -330,6 +330,9 @@ MonoBehaviour:
   sliceYMax: 1
   sliceZMin: 0
   sliceZMax: 1
+  pointer_intensity: 2
+  plane_thickness: 0.05
+  plane: {x: 0, y: 0, z: 0, w: 0}
   axis: {x: 0, y: 0, z: 0, w: 1}
   volume: {fileID: 11700000, guid: 1a553f4a3ed627541959494c4e64476d, type: 2}
 --- !u!33 &706833808
@@ -385,7 +388,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 706833806}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0.53, y: 1.32, z: 1.25}
+  m_LocalPosition: {x: 1.1, y: 2.44, z: 0.52}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -440,20 +443,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTetherWhenManipulating: 1
---- !u!64 &706833813
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 706833806}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 0
-  m_CookingOptions: 14
-  m_Mesh: {fileID: 0}
 --- !u!114 &706833814
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -520,6 +509,19 @@ MonoBehaviour:
   ScaleStopped:
     m_PersistentCalls:
       m_Calls: []
+--- !u!65 &706833816
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 706833806}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1937368658
 GameObject:
   m_ObjectHideFlags: 0

@@ -51,14 +51,14 @@ float3 get_uv(float3 p) {
 }
 
 bool intersectScanPlane(float3 uv) {
-    float4 plane = get_uv(_ThicknessPlane);
+    float4 plane = (_PlaneScanPara.xyz + 0.5, _PlaneScanPara.a);
     float a, b, c, d;
     a = plane.x;
     b = plane.y;
     c = plane.z;
     d = plane.a;
     float res = (a * uv.x + b * uv.y + c * uv.z + d) / (sqrt(pow(a, 2) + pow(b, 2) + pow(c, 2)));
-    return res < _ThicknessPlane;
+    return res < 100.0;
     
 }
 
@@ -69,7 +69,7 @@ float sample_volume(float3 uv, float3 p)
   float dist_to_pointer = distance(uv, get_uv(_PointerPosition));
   float local_intensity = _Intensity + max(0.0, _PointerIntensity - (dist_to_pointer * 10.0));
   if (intersectScanPlane(uv)) {
-    local_intensity += 2.0;
+    local_intensity += 5.0;
   }
    
   float v = tex3D(_Volume, uv).r * local_intensity; // the main call that extract data from texture map
