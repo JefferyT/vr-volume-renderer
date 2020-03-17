@@ -70,7 +70,7 @@ float sample_volume(float3 uv, float3 p)
 {
     
   float dist_to_pointer = distance(uv, get_uv(_PointerPosition));
-  float local_intensity = _Intensity + max(0.0, _PointerIntensity - (dist_to_pointer * 10.0));
+  float local_intensity = _Intensity + max(0.0, _PointerIntensity - (pow(dist_to_pointer * 10, 2)));
   float plane_intensity = intersectScanPlane(uv);
   if (plane_intensity) {
     local_intensity += 100 * plane_intensity;
