@@ -72,8 +72,18 @@ namespace VolumeRendering
                 new Vector3 ( 0.5f,  0.5f,  0.5f),
                 new Vector3 ( 0.5f, -0.5f,  0.5f),
                 new Vector3 (-0.5f, -0.5f,  0.5f),
+                new Vector3 (-0.25f, -0.25f, -0.25f), // 8 0
+                new Vector3 ( 0.25f, -0.25f, -0.25f), // 9 1
+                new Vector3 ( 0.25f,  0.25f, -0.25f), // 10 2
+                new Vector3 (-0.25f,  0.25f, -0.25f), // 11 3
+                new Vector3 (-0.25f,  0.25f,  0.25f), // 12 4
+                new Vector3 ( 0.25f,  0.25f,  0.25f), // 13 5
+                new Vector3 ( 0.25f, -0.25f,  0.25f), // 14 6
+                new Vector3 (-0.25f, -0.25f,  0.25f), // 15 7
+
             };
             var triangles = new int[] {
+                // outter mesh
                 0, 2, 1,
                 0, 3, 2,
                 2, 3, 4,
@@ -85,7 +95,20 @@ namespace VolumeRendering
                 5, 4, 7,
                 5, 7, 6,
                 0, 6, 7,
-                0, 1, 6
+                0, 1, 6,
+                ///// inner mesh
+                8, 10, 9,
+                8, 11, 10,
+                10, 11, 12,
+                10, 12, 13,
+                9, 10, 13,
+                9, 13, 14,
+                8, 15, 12,
+                8, 12, 11,
+                13, 12, 15,
+                13, 15, 14,
+                8, 14, 15,
+                8, 9, 14,
             };
 
             var mesh = new Mesh();
