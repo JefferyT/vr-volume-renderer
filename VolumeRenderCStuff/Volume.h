@@ -44,7 +44,7 @@ class Volume {
   float TriLinearInterpolation(vec3 position);
   // gets the gradient at a point
   vec3 Gradient(vec3 position, float stepSize);
-  int SaveVolume();
+  int SaveVolume(const char *outputName, char *image, int width, int height);
   vector<short> raw_volume_;
   vec3 volume_location_;
   vec3 size_;

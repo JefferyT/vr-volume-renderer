@@ -52,3 +52,43 @@ void Volume::PrintSlice(int depth) {
 int Volume::Index(int x, int y, int z) {
   return x + y * this->size_.x * this->size_.z + z * this->size_.x;
 }
+
+int SaveVolume(const char *outputName, char *image, int width, int height) {
+  struct jpeg_compress_struct cinfo;
+	struct jpeg_error_mgr jerr;
+  JSAMPROW row_pointer[1];
+  FILE *outfile = fopen(outputName, "wb");
+  if (!outfile) {
+    cerr << "Error opening output jpeg file " << outputName << endl;
+    return -1;
+  }
+
+  cinfo.err = jpeg_std_error(&jerr);
+  jpeg_create_compress(&cinfo);
+  jpeg_stdio_dest(&cinfo, outfile);
+
+  cinfo.image_width = imageWidth;
+  cinfo.image_height = imageHeight;
+  cinfo.input_components = 3;
+  cinfo.in_color_space = JCS_RGB;
+
+  jpeg_set_defaults(&cinfo);
+  cinfo.num_components = 3;
+
+  cinfo.dct_method = JDCT_FLOAT;
+  jpeg_set_quality(&cinfo, 100, true);
+
+  jpeg_start_compress(&cinfo, TRUE);
+
+  while (cinfo.next_scanline < cinfo.image_height) {
+    row_pointer[0] = &(image[cinfo.next_scanline
+            * cinfo.image_width * cinfo.input_components]);
+    jpeg_write_scanlines(&cinfo, row_pointer, 1);
+  }
+
+  jpeg_finish_compress(&cinfo);
+  jpeg_destroy_compress(&cinfo);
+  fclose(outfile);
+
+  return 1;
+}
