@@ -12,6 +12,8 @@ sampler3D _Volume;
 half _Intensity, _Threshold;
 half3 _SliceMin, _SliceMax;
 float4x4 _AxisRotationMatrix;
+half3 _PointerPosition;
+half _PointerIntensity;
 
 struct Ray {
   float3 origin;
@@ -46,9 +48,16 @@ float3 get_uv(float3 p) {
   return (p + 0.5);
 }
 
+
+// these returns a value that is zero, or a positive number, handle slicing
 float sample_volume(float3 uv, float3 p)
 {
-  float v = tex3D(_Volume, uv).r * _Intensity;
+    
+    float dist_to_pointer = distance(uv, get_uv(_PointerPosition));
+    float local_intensity = _Intensity + max(0.0, _PointerIntensity - (dist_to_pointer * 10.0));
+
+   
+  float v = tex3D(_Volume, uv).r * local_intensity; // the main call that extract data from texture map
 
   float3 axis = mul(_AxisRotationMatrix, float4(p, 0)).xyz;
   axis = get_uv(axis);
@@ -114,14 +123,14 @@ fixed4 frag(v2f i) : SV_Target
   tnear = max(0.0, tnear);
 
   // float3 start = ray.origin + ray.dir * tnear;
-  float3 start = ray.origin;
+  float3 start = ray.origin;  
   float3 end = ray.origin + ray.dir * tfar;
   float dist = abs(tfar - tnear); // float dist = distance(start, end);
   float step_size = dist / float(ITERATIONS);
   float3 ds = normalize(end - start) * step_size;
 
   float4 dst = float4(0, 0, 0, 0);
-  float3 p = start;
+  float3 p = start; // starts in local space
 
   [unroll]
   for (int iter = 0; iter < ITERATIONS; iter++)
