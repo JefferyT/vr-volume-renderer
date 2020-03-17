@@ -58,7 +58,7 @@ namespace VolumeRendering
             material.SetVector("_PlaneScanPara", plane);
 
             Vector3 rightPosition = InputTracking.GetLocalPosition(XRNode.RightHand);
-            Debug.Log("right pos " + rightPosition);
+            //Debug.Log("right pos " + rightPosition);
         }
 
         Mesh Build()
