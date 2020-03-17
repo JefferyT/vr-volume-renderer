@@ -11,6 +11,7 @@
 		_PointerPosition("Hand Pointer Pos", Vector) = (0.2, 0.2, 0.0, -1.0)
 		_PointerIntensity("Pointer Light Intensity", Range(1.0, 5.0)) = 5.0
 		_PlaneScanPara("Scanning Normal", Vector) = (0.2, 0.2, 0.2, 0.2) // a, b, c, d to represent a 3d plane
+		_ThicknessPlane("Plane Thickness", Range(0.0, 0.2)) = 0.05
 	}
 
 		CGINCLUDE
