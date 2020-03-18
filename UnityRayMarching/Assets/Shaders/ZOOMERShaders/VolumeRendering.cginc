@@ -50,14 +50,14 @@ float3 get_uv(float3 p) {
   return (p + 0.5);
 }
 
-float intersectScanPlane(float3 uv) {
+float intersectScanPlane(float3 p) {
     float4 plane = _PlaneScanPara;
     float a, b, c, d;
     a = plane.x;
     b = plane.y;
     c = plane.z;
     d = plane.a;
-    float res = (a * uv.x + b * uv.y + c * uv.z + d) / (sqrt(pow(a, 2) + pow(b, 2) + pow(c, 2)));
+    float res = (a * p.x + b * p.y + c * p.z + d) / (sqrt(pow(a, 2) + pow(b, 2) + pow(c, 2)));
     if (abs(res) > _ThicknessPlane) {
         return 0;
     }
@@ -71,7 +71,7 @@ float sample_volume(float3 uv, float3 p)
     
   float dist_to_pointer = distance(uv, get_uv(_PointerPosition));
   float local_intensity = _Intensity + max(0.0, _PointerIntensity - (pow(dist_to_pointer * 10, 2)));
-  float plane_intensity = intersectScanPlane(uv);
+  float plane_intensity = intersectScanPlane(p);
   if (plane_intensity) {
     local_intensity += 100 * plane_intensity;
   }
