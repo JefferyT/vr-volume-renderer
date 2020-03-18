@@ -191,12 +191,12 @@ float Volume::TriLinearInterpolation(vec3 point) {
 
   float cX[2];
   // c0
-  cX[0] = cXX[0] *(1.0 - zd) + cXX[1];
+  cX[0] = cXX[0] *(1.0 - yd) + cXX[1];
   // c1
-  cX[1] = cXX[2] *(1.0 - zd) + cXX[2];
+  cX[1] = cXX[2] *(1.0 - yd) + cXX[2];
 
   float c;
-  c = cX[0] *(1.0 - yd) + cX[1];
+  c = cX[0] *(1.0 - zd) + cX[1];
 
   return c;
 }
