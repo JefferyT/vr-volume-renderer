@@ -94,6 +94,38 @@ namespace VolumeRendering
 
         }
 
+        // build scanning plane
+        // pass in abcd that represent a plane in 3d, and a controller
+        void buildPlane(ref float a, ref float b, ref float c, ref float d, GameObject controller)
+        {
+            Vector3 position = controller.transform.position; // world space
+            Quaternion quaternion = controller.transform.rotation;
+            float theta = (float) Math.Acos(quaternion.w) * 2;
+            Vector3 v1 = new Vector3(quaternion.x, quaternion.y, quaternion.z);
+            Vector3 v2_controller = new Vector3(1, 0, 0); // controller's space
+            Vector3 v2 = controller.transform.TransformDirection(v2_controller); // to world space
+            v2 = Quaternion.AngleAxis(theta * Mathf.Rad2Deg, v1) * v2; // rotate with theta
+
+            // transform everything to mesh's space
+            Vector3 m_postion = this.transform.InverseTransformPoint(position);
+            Vector3 m_v1 = this.transform.InverseTransformDirection(v1);
+            Vector3 m_v2 = this.transform.InverseTransformDirection(v2);
+            Vector3 p1 = m_postion;
+            Vector3 p2 = m_postion + m_v1;
+            Vector3 p3 = m_postion + m_v2;
+
+            float a1 = p2.x - p1.x;
+            float b1 = p2.y - p1.y;
+            float c1 = p2.z - p1.z;
+            float a2 = p3.x - p1.x;
+            float b2 = p3.y - p1.y;
+            float c2 = p3.z - p1.z;
+            a = b1 * c2 - b2 * c1;
+            b = a2 * c1 - a1 * c2;
+            c = a1 * b2 - b1 * a2;
+            d = (-a * p1.x - b * p1.y - c * p1.z);
+        }
+        
         Mesh Build(float width)
         {
             var vertices = new Vector3[] {
