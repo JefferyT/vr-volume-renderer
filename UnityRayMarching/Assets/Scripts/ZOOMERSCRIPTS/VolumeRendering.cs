@@ -57,11 +57,11 @@ namespace VolumeRendering
 
         protected void Update()
         {
+            // scaling is fucking this up
             this.width = Vector3.Distance(this.transform.position, vrCam.transform.position) / Mathf.Sqrt(2f);
-            if (width < 0.6f)
-            {
-                mesh = BuildMesh(width - 0.1f);
-            }
+            
+            mesh = BuildMesh((float) Math.Min(width, 0.6) - 0.1f);
+            
             Vector3 rightPosition = InputTracking.GetLocalPosition(XRNode.RightHand);
             if (rightPosition != null)
             {
@@ -78,8 +78,7 @@ namespace VolumeRendering
             material.SetMatrix("_AxisRotationMatrix", Matrix4x4.Rotate(axis));
             material.SetFloat("_PointerIntensity", pointer_intensity);
             material.SetFloat("_ThicknessPlane", plane_thickness);
-            material.SetVector("_PlaneScanPara", plane);
-            
+
 
             try
             {
@@ -90,6 +89,8 @@ namespace VolumeRendering
                 Console.Write("Right controller not detected, retrying...");
                 rightController = GameObject.Find("Right_Right OpenVR Controller");
             }
+            buildPlane(ref plane.x, ref plane.y, ref plane.z, ref plane.w, rightController);
+            material.SetVector("_PlaneScanPara", plane);
 
 
         }
