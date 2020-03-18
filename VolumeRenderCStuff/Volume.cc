@@ -64,6 +64,15 @@ vec3 Volume::GetColor(vec3 position, vec3 direction, float stepSize) {
   vec3 color;
   vec4 lookup = LookupTable(val);
   color = {lookup.x * 255.0f, lookup.y * 255.0f, lookup.z * 255.0f};
+  if (color.x > 255.0f) {
+    color.x = 255.0f;
+  }
+  if (color.y > 255.0f) {
+    color.y = 255.0f;
+  }
+  if (color.z > 255.0f) {
+    color.z = 255.0f;
+  }
   return color;
 }
 
@@ -150,7 +159,7 @@ vec3 Volume::Gradient(vec3 position, float stepSize) {
               + TriLinearInterpolation({position.x, position.y - stepSize, position.z});
   gradient.y /= 2.0;
 
-  gradient.z = TriLinearInterpolation({position.x, position.y, position.z - stepSize})
+  gradient.z = TriLinearInterpolation({position.x, position.y, position.z + stepSize})
               + TriLinearInterpolation({position.x, position.y, position.z - stepSize});
   gradient.z /= 2.0;
 
@@ -159,7 +168,7 @@ vec3 Volume::Gradient(vec3 position, float stepSize) {
 }
 
 float Volume::Distance(vec3 u, vec3 v) {
-  return sqrt(pow(u.x - v.x, 2.0) + pow(u.y - v.y, 2.0) + pow(u.y - v.y, 2.0));
+  return sqrt(pow(u.x - v.x, 2.0) + pow(u.y - v.y, 2.0) + pow(u.z - v.z, 2.0));
 }
 
 void Volume::PrintSlice(int depth) {
@@ -180,10 +189,10 @@ int Volume::Index(int x, int y, int z) {
 }
 
 int Volume::SaveVolume(const char *outputName, unsigned char *image, int width, int height) {
-  FILE *fp = fopen("image.dat", "wb");
+/*  FILE *fp = fopen("image.dat", "wb");
   fwrite(image, sizeof(char), width * height * 3, fp);
   fclose(fp);
-/*  
+*/  
   struct jpeg_compress_struct cinfo;
 	struct jpeg_error_mgr jerr;
   JSAMPROW row_pointer[1];
@@ -219,6 +228,6 @@ int Volume::SaveVolume(const char *outputName, unsigned char *image, int width, 
   jpeg_finish_compress(&cinfo);
   jpeg_destroy_compress(&cinfo);
   fclose(outfile);
-*/
+
   return 1;
 }
