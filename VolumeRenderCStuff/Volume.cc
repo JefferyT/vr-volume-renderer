@@ -17,8 +17,8 @@ Volume::Volume(const char *inputName, int width, int height, int depth) {
   this->volume_location_.y = 0;
   this->volume_location_.z = 100.0;
   this->size_.x = width;
-  this->size_.y = height;
-  this->size_.z = depth;
+  this->size_.y = depth;
+  this->size_.z = height;
 }
 
 int Volume::RenderVolume(const char *outputName, int imageWidth, int imageHeight) {
@@ -28,9 +28,9 @@ int Volume::RenderVolume(const char *outputName, int imageWidth, int imageHeight
   for (int i = 0; i < imageWidth; i++) {
     for (int j = 0; j < imageHeight; j++) {
       vec3 curColor = GetColor({(float) i * xStep, (float) j * yStep, 0.0}, {0.0, 0.0, 1.0}, 1);
-      buf[(i + j * imageWidth) * 3] = (unsigned char) curColor.x;
-      buf[(i + j * imageWidth) * 3 + 1] = (unsigned char) curColor.y;
-      buf[(i + j * imageWidth) * 3 + 2] = (unsigned char) curColor.z;
+      buf[(i + (imageHeight - j) * imageWidth) * 3] = (unsigned char) curColor.x;
+      buf[(i + (imageHeight - j) * imageWidth) * 3 + 1] = (unsigned char) curColor.y;
+      buf[(i + (imageHeight - j) * imageWidth) * 3 + 2] = (unsigned char) curColor.z;
     }
   }
   return SaveVolume(outputName, buf, imageWidth, imageHeight);
@@ -52,12 +52,12 @@ int Volume::RenderDefault(const char *outputName) {
 
 vec3 Volume::TestLookupTable(float val) {
   if (val < 0) {
-    return {0, 0, 0};
+    val = 0;
   }
-  if (val > 500.0) {
-    val = 500.0;
+  if (val > 3600.0) {
+    val = 3600.0;
   }
-  return {255.0f * (val / 500.0f), 255.0f * (val / 500.0f), 255.0f * (val / 500.0f)};
+  return {255.0f * (val / 3600.0f), 255.0f * (val / 3600.0f), 255.0f * (val / 3600.0f)};
 }
 
 vec3 Volume::GetColor(vec3 position, vec3 direction, float stepSize) {
@@ -85,8 +85,8 @@ vec3 Volume::GetColor(vec3 position, vec3 direction, float stepSize) {
 
   float val = TriLinearInterpolation({position.x, position.y, 200.0});
   vec3 color;
-  vec4 lookup = LookupTable(val);
-  color = {lookup.x * 255.0f, lookup.y * 255.0f, lookup.z * 255.0f};
+  // vec4 lookup = LookupTable(val);
+  color = TestLookupTable(val); //{lookup.x * 255.0f, lookup.y * 255.0f, lookup.z * 255.0f};
   if (color.x > 255.0f) {
     color.x = 255.0f;
   }
@@ -208,7 +208,7 @@ void Volume::PrintSlice(int depth) {
 }
 
 int Volume::Index(int x, int y, int z) {
-  return x + y * (int) this->size_.x + z * (int) this->size_.x * (int)this->size_.y;
+  return x + y * (int) this->size_.x * (int) this->size_.z + z * (int) this->size_.x;
 }
 
 int Volume::SaveVolume(const char *outputName, unsigned char *image, int width, int height) {
