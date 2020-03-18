@@ -43,8 +43,6 @@ namespace VolumeRendering
             BuildMesh(0.5f);
             //GetComponent<MeshCollider>().sharedMesh = mesh;
             vrCam = Camera.main;
-            
-            
         }
 
         private Mesh BuildMesh (float width)
@@ -57,41 +55,52 @@ namespace VolumeRendering
 
         protected void Update()
         {
-            // scaling is fucking this up
-            this.width = Vector3.Distance(this.transform.position, vrCam.transform.position) / Mathf.Sqrt(2f);
-            
-            mesh = BuildMesh((float) Math.Min(width, 0.6) - 0.1f);
-            
-            Vector3 rightPosition = InputTracking.GetLocalPosition(XRNode.RightHand);
-            if (rightPosition != null)
-            {
-                Vector3 controller_local_coord = this.transform.InverseTransformPoint(rightPosition);
-                material.SetVector("_PointerPosition", controller_local_coord);
-            }
+            controllerUpdate();
+            updateMainMesh(true);
+            updateMaterial();
+        }
+
+        void updateMaterial()
+        {
             material.SetTexture("_Volume", volume);
             material.SetColor("_Color", color);
             material.SetFloat("_Threshold", threshold);
             material.SetFloat("_Intensity", intensity);
             material.SetVector("_SliceMin", new Vector3(sliceXMin, sliceYMin, sliceZMin));
             material.SetVector("_SliceMax", new Vector3(sliceXMax, sliceYMax, sliceZMax));
-
             material.SetMatrix("_AxisRotationMatrix", Matrix4x4.Rotate(axis));
             material.SetFloat("_PointerIntensity", pointer_intensity);
             material.SetFloat("_ThicknessPlane", plane_thickness);
-
-
-            try
-            {
-                Debug.Log(rightController.transform.position + " " + rightController.transform.rotation);
-            }
-            catch (NullReferenceException e)
-            {
-                Console.Write("Right controller not detected, retrying...");
-                rightController = GameObject.Find("Right_Right OpenVR Controller");
-            }
-            buildPlane(ref plane.x, ref plane.y, ref plane.z, ref plane.w, rightController);
             material.SetVector("_PlaneScanPara", plane);
+        }
 
+        void updateMainMesh(Boolean isMain)
+        {
+            // scaling is fucking this up
+            this.width = Vector3.Distance(this.transform.position, vrCam.transform.position) / Mathf.Sqrt(2f);
+            mesh = BuildMesh((float)Math.Min(width, 0.6) - 0.1f);
+           
+        }
+
+        void controllerUpdate()
+        {
+            Vector3 rightPosition = InputTracking.GetLocalPosition(XRNode.RightHand);
+            if (rightPosition != null)
+            {
+                Vector3 controller_local_coord = this.transform.InverseTransformPoint(rightPosition);
+                material.SetVector("_PointerPosition", controller_local_coord);
+            }
+
+            //try
+            //{
+            //    Debug.Log(rightController.transform.position + " " + rightController.transform.rotation);
+            //}
+            //catch (NullReferenceException e)
+            //{
+            Console.Write("Right controller not detected, retrying...");
+            if(rightController == null) rightController = GameObject.Find("Right_Right OpenVR Controller");
+            //}
+            buildPlane(ref plane.x, ref plane.y, ref plane.z, ref plane.w, rightController);
 
         }
 
@@ -99,7 +108,7 @@ namespace VolumeRendering
         // pass in abcd that represent a plane in 3d, and a controller
         void buildPlane(ref float a, ref float b, ref float c, ref float d, GameObject controller)
         {
-            Vector3 position = controller.transform.position; // world space
+            Vector3 position = controller == null ? Vector3.zero : controller.transform.position; // world space
             Quaternion quaternion = controller.transform.rotation;
             float theta = (float) Math.Acos(quaternion.w) * 2;
             Vector3 v1 = new Vector3(quaternion.x, quaternion.y, quaternion.z);
