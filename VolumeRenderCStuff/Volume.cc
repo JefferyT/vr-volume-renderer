@@ -63,7 +63,8 @@ vec3 Volume::TestLookupTable(float val) {
 vec3 Volume::GetColor(vec3 position, vec3 direction, float stepSize) {
   vec3 curPos = position;
   vec4 cur = {0.0, 0.0, 0.0, 0.0};
-  while (cur.w <= 0.98 && curPos.x < this->size_.x && curPos.y < this->size_.y && curPos.z < this->size_.z ) {
+  int i = 0;
+  while (cur.w <= 0.99 && curPos.x < this->size_.x && curPos.y < this->size_.y && curPos.z < this->size_.z ) {
     vec4 curColorOpacity = this->LookupTable(TriLinearInterpolation(curPos));
     curPos.x += direction.x * stepSize;
     curPos.y += direction.y * stepSize;
@@ -81,12 +82,13 @@ vec3 Volume::GetColor(vec3 position, vec3 direction, float stepSize) {
     curPos.x += stepSize * (direction.x);
     curPos.y += stepSize * (direction.y);
     curPos.z += stepSize * (direction.z);
+    i++;
   }
-
+  // cout << i << endl;
   float val = TriLinearInterpolation({position.x, position.y, 200.0});
   vec3 color;
-  // vec4 lookup = LookupTable(val);
-  color = TestLookupTable(val); //{lookup.x * 255.0f, lookup.y * 255.0f, lookup.z * 255.0f};
+  vec4 lookup = LookupTable(val);
+  color = {lookup.x * 255.0f, lookup.y * 255.0f, lookup.z * 255.0f};
   if (color.x > 255.0f) {
     color.x = 255.0f;
   }
@@ -144,32 +146,59 @@ vec4 Volume::LookupTable(float value) {
 }
 
 float Volume::TriLinearInterpolation(vec3 point) {
-  int x = (int) point.x;
-  int y = (int) point.y;
-  int z = (int) point.z;
-  float vals[8];
+  float xd = (int) (point.x);
+  float yd = (int) (point.y);
+  float zd = (int) (point.z);
 
-  // +0
-  vals[0] = (float) this->raw_volume_[Index(x, y, z)] / Distance(point, {(float) x, (float)y, (float)z});
-  // +x
-  vals[1] = (float) this->raw_volume_[Index(x + 1, y, z)] / Distance(point, {(float) x + 1, (float)y, (float)z});
-  // +y
-  vals[2] = (float) this->raw_volume_[Index(x, y + 1, z)] / Distance(point, {(float) x, (float)y + 1, (float)z});
-  // +z
-  vals[3] = (float) this->raw_volume_[Index(x, y, z + 1)] / Distance(point, {(float) x, (float)y, (float)z + 1});
-  // +x + y
-  vals[4] = (float) this->raw_volume_[Index(x + 1, y + 1, z)] / Distance(point, {(float) x + 1, (float)y + 1, (float)z});
-  // +x +z
-  vals[5] = (float) this->raw_volume_[Index(x + 1, y, z + 1)] / Distance(point, {(float) x + 1, (float)y, (float)z + 1});
-  // +y +z
-  vals[6] = (float) this->raw_volume_[Index(x, y + 1, z + 1)] / Distance(point, {(float) x, (float)y + 1, (float)z + 1});
-  // +x +y +z
-  vals[7] = (float) this->raw_volume_[Index(x + 1, y + 1, z + 1)] / Distance(point, {(float) x + 1, (float)y + 1, (float)z + 1});
-  float ret = 0.0;
-  for (int i = 0; i < 8; i++) {
-    ret += vals[i];
-  }
-  return ret;
+  
+  
+  float cXXX[8];
+
+  // c000
+  cXXX[0] = (float) this->raw_volume_[Index(xd, yd, zd)];
+  // c100
+  cXXX[1] = (float) this->raw_volume_[Index(xd + 1, yd, zd)];
+  // c010
+  cXXX[2] = (float) this->raw_volume_[Index(xd, yd + 1, zd)];
+  // c001
+  cXXX[3] = (float) this->raw_volume_[Index(xd, yd, zd + 1)];
+  // c110
+  cXXX[4] = (float) this->raw_volume_[Index(xd + 1, yd + 1, zd)];
+  // c101
+  cXXX[5] = (float) this->raw_volume_[Index(xd + 1, yd, zd + 1)];
+  // c011
+  cXXX[6] = (float) this->raw_volume_[Index(xd, yd + 1, zd + 1)];
+  // c111
+  cXXX[7] = (float) this->raw_volume_[Index(xd + 1, yd + 1, zd + 1)];
+  
+  xd = point.x - xd;
+  yd = point.y - yd;
+  zd = point.z - zd;
+
+  xd /= 1.0;
+  yd /= 1.0;
+  zd /= 1.0;
+
+  float cXX[4];
+  // c00
+  cXX[0] = cXXX[0] *(1.0 - xd) + cXXX[1];
+  // c01
+  cXX[1] = cXXX[3] *(1.0 - xd) + cXXX[5];
+  // c10
+  cXX[2] = cXXX[2] *(1.0 - xd) + cXXX[4];
+  // c11
+  cXX[3] = cXXX[6] *(1.0 - xd) + cXXX[7];
+
+  float cX[2];
+  // c0
+  cX[0] = cXX[0] *(1.0 - zd) + cXX[1];
+  // c1
+  cX[1] = cXX[2] *(1.0 - zd) + cXX[2];
+
+  float c;
+  c = cX[0] *(1.0 - yd) + cX[1];
+
+  return c;
 }
 
 vec3 Volume::Gradient(vec3 position, float stepSize) {

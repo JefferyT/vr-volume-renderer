@@ -32,6 +32,15 @@
     "system_error": "cpp",
     "tuple": "cpp",
     "typeinfo": "cpp",
-    "utility": "cpp"
+    "utility": "cpp",
+    "atomic": "cpp",
+    "bitset": "cpp",
+    "complex": "cpp",
+    "deque": "cpp",
+    "list": "cpp",
+    "string": "cpp",
+    "iterator": "cpp",
+    "memory_resource": "cpp",
+    "functional": "cpp"
   }
 }
