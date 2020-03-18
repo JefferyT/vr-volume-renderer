@@ -26,8 +26,9 @@ int Volume::RenderVolume(const char *outputName, int imageWidth, int imageHeight
   float yStep = this->size_.y / (float) imageHeight;
   unsigned char *buf = new unsigned char[imageHeight * imageWidth * 3];
   for (int i = 0; i < imageWidth; i++) {
+//    cout << "row " << i << endl;
     for (int j = 0; j < imageHeight; j++) {
-      vec3 curColor = GetColor({(float) i * xStep, (float) j * yStep, 0.0}, {0.0, 0.0, 1.0});
+      vec3 curColor = GetColor({(float) i * xStep, (float) j * yStep, 0.0}, {0.0, 0.0, 1.0}, 1);
       buf[(i + j * imageWidth) * 3] = (unsigned char) curColor.x;
       buf[(i + j * imageWidth) * 3 + 1] = (unsigned char) curColor.y;
       buf[(i + j * imageWidth) * 3 + 2] = (unsigned char) curColor.z;
@@ -36,7 +37,29 @@ int Volume::RenderVolume(const char *outputName, int imageWidth, int imageHeight
   return SaveVolume(outputName, buf, imageWidth, imageHeight);
 }
 
-vec3 Volume::GetColor(vec3 position, vec3 direction) {
+vec3 Volume::GetColor(vec3 position, vec3 direction, float stepSize) {
+  vec3 curPos = position;
+  vec4 cur = {0.0, 0.0, 0.0, 0.0};
+  while (cur.w <= 0.98 && curPos.x < this->size_.x && curPos.y < this->size_.y && curPos.z < this->size_.z ) {
+    vec4 curColorOpacity = this->LookupTable(TriLinearInterpolation(curPos));
+    curPos.x += direction.x * stepSize;
+    curPos.y += direction.y * stepSize;
+    curPos.z += direction.z * stepSize;
+    
+
+    // new color
+    cur.x += curColorOpacity.x * curColorOpacity.w * (1.0 - cur.w);
+    cur.y += curColorOpacity.y * curColorOpacity.w * (1.0 - cur.w);
+    cur.z += curColorOpacity.z * curColorOpacity.w * (1.0 - cur.w);    
+
+    // new opacity
+    cur.w += curColorOpacity.w * (1.0 - cur.w);
+
+    curPos.x += stepSize * (direction.x);
+    curPos.y += stepSize * (direction.y);
+    curPos.z += stepSize * (direction.z);
+  }
+
   float val = TriLinearInterpolation({position.x, position.y, 200.0});
   vec3 color;
   vec4 lookup = LookupTable(val);
@@ -157,6 +180,10 @@ int Volume::Index(int x, int y, int z) {
 }
 
 int Volume::SaveVolume(const char *outputName, unsigned char *image, int width, int height) {
+  FILE *fp = fopen("image.dat", "wb");
+  fwrite(image, sizeof(char), width * height * 3, fp);
+  fclose(fp);
+/*  
   struct jpeg_compress_struct cinfo;
 	struct jpeg_error_mgr jerr;
   JSAMPROW row_pointer[1];
@@ -192,6 +219,6 @@ int Volume::SaveVolume(const char *outputName, unsigned char *image, int width, 
   jpeg_finish_compress(&cinfo);
   jpeg_destroy_compress(&cinfo);
   fclose(outfile);
-
+*/
   return 1;
 }

@@ -49,7 +49,7 @@ class Volume {
   // gets the gradient at a point
   vec3 Gradient(vec3 position, float stepSize);
   // gets the color for a certain ray
-  vec3 GetColor(vec3 position, vec3 direction);
+  vec3 GetColor(vec3 position, vec3 direction, float stepSize);
   vec4 LookupTable(float value);
   int SaveVolume(const char *outputName, unsigned char *image, int width, int height);
   float Distance(vec3 u, vec3 v);
