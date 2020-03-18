@@ -49,7 +49,7 @@ class Volume {
   float TriLinearInterpolation(vec3 position);
   // gets the gradient at a point
   vec3 Gradient(vec3 position, float stepSize);
-  // gets the color for a certain ray
+  // what renders a single pixel
   vec3 GetColor(vec3 position, vec3 direction, float stepSize);
   vec4 LookupTable(float value);
   vec3 TestLookupTable(float value);

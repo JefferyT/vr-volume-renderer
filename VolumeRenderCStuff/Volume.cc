@@ -70,11 +70,11 @@ vec3 Volume::GetColor(vec3 position, vec3 direction, float stepSize) {
     curPos.y += direction.y * stepSize;
     curPos.z += direction.z * stepSize;
     
-
+    // implement shader on these colors
     // new color
     cur.x += curColorOpacity.x * curColorOpacity.w * (1.0 - cur.w);
     cur.y += curColorOpacity.y * curColorOpacity.w * (1.0 - cur.w);
-    cur.z += curColorOpacity.z * curColorOpacity.w * (1.0 - cur.w);    
+    cur.z += curColorOpacity.z * curColorOpacity.w * (1.0 - cur.w);
 
     // new opacity
     cur.w += curColorOpacity.w * (1.0 - cur.w);
