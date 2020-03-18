@@ -7,33 +7,99 @@
 
 #define DEFAULT_NUM_COMPONENTS 3
 
-using std::cout;
-using std::endl;
-using std::vector;
 
 Volume::Volume(const char *inputName, int width, int height, int depth) {
   FILE *fp = fopen(inputName, "rb");
   this->raw_volume_.resize(width * height * depth);
   fread(&this->raw_volume_[0], sizeof(short), this->raw_volume_.size(), fp);
   fclose(fp);
-  this->volume_location_.x = width / 2.0;
-  this->volume_location_.y = height / 2.0;
-  this->volume_location_.z = -100.0;
+  this->volume_location_.x = 0;
+  this->volume_location_.y = 0;
+  this->volume_location_.z = 100.0;
   this->size_.x = width;
   this->size_.y = height;
   this->size_.z = depth;
 }
 
 int Volume::RenderVolume(const char *outputName, int imageWidth, int imageHeight) {
-  return 1;
+  float xStep = this->size_.x / (float) imageWidth;
+  float yStep = this->size_.y / (float) imageHeight;
+  unsigned char *buf = new unsigned char[imageHeight * imageWidth * 3];
+  for (int i = 0; i < imageWidth; i++) {
+    for (int j = 0; j < imageHeight; j++) {
+      vec3 curColor = GetColor({(float) i * xStep, (float) j * yStep, 0.0}, {0.0, 0.0, 1.0});
+      buf[(i + j * imageWidth) * 3] = (unsigned char) curColor.x;
+      buf[(i + j * imageWidth) * 3 + 1] = (unsigned char) curColor.y;
+      buf[(i + j * imageWidth) * 3 + 2] = (unsigned char) curColor.z;
+    }
+  }
+  return SaveVolume(outputName, buf, imageWidth, imageHeight);
 }
 
-float TriLinearInterpolation(vec3 point) {
-  return 0.0;
+vec3 Volume::GetColor(vec3 position, vec3 direction) {
+  float val = TriLinearInterpolation({position.x, position.y, 200});
+  vec3 color;
+  if (val >= 200) {
+    color = {255, 255, 255};
+  } else if (val < 200 && val > 0) {
+    color = {170, 130, 110};
+  } else if (val == 0) {
+    color = {50, 50, 150};
+  } else {
+    color = {0, 0, 0};
+  }
+  return color;
 }
 
-vec3 Gradient(vec3 position, float stepSize) {
-  return vec3(0.0, 0.0, 0.0);
+float Volume::TriLinearInterpolation(vec3 point) {
+  int x = (int) point.x;
+  int y = (int) point.y;
+  int z = (int) point.z;
+  float vals[8];
+
+  // +0
+  vals[0] = (float) this->raw_volume_[Index(x, y, z)] / Distance(point, {(float) x, (float)y, (float)z});
+  // +x
+  vals[1] = (float) this->raw_volume_[Index(x + 1, y, z)] / Distance(point, {(float) x + 1, (float)y, (float)z});
+  // +y
+  vals[2] = (float) this->raw_volume_[Index(x, y + 1, z)] / Distance(point, {(float) x, (float)y + 1, (float)z});
+  // +z
+  vals[3] = (float) this->raw_volume_[Index(x, y, z + 1)] / Distance(point, {(float) x, (float)y, (float)z + 1});
+  // +x + y
+  vals[4] = (float) this->raw_volume_[Index(x + 1, y + 1, z)] / Distance(point, {(float) x + 1, (float)y + 1, (float)z});
+  // +x +z
+  vals[5] = (float) this->raw_volume_[Index(x + 1, y, z + 1)] / Distance(point, {(float) x + 1, (float)y, (float)z + 1});
+  // +y +z
+  vals[6] = (float) this->raw_volume_[Index(x, y + 1, z + 1)] / Distance(point, {(float) x, (float)y + 1, (float)z + 1});
+  // +x +y +z
+  vals[7] = (float) this->raw_volume_[Index(x + 1, y + 1, z + 1)] / Distance(point, {(float) x + 1, (float)y + 1, (float)z + 1});
+  float ret = 0.0;
+  for (int i = 0; i < 8; i++) {
+    ret += vals[i];
+  }
+  return ret;
+}
+
+vec3 Volume::Gradient(vec3 position, float stepSize) {
+  vec3 gradient;
+  gradient.x = TriLinearInterpolation({position.x + stepSize, position.y, position.z})
+              + TriLinearInterpolation({position.x - stepSize, position.y, position.z});
+  gradient.x /= 2.0;
+
+  gradient.y = TriLinearInterpolation({position.x, position.y + stepSize, position.z})
+              + TriLinearInterpolation({position.x, position.y - stepSize, position.z});
+  gradient.y /= 2.0;
+
+  gradient.z = TriLinearInterpolation({position.x, position.y, position.z - stepSize})
+              + TriLinearInterpolation({position.x, position.y, position.z - stepSize});
+  gradient.z /= 2.0;
+
+  
+  return gradient;
+}
+
+float Volume::Distance(vec3 u, vec3 v) {
+  return sqrt(pow(u.x - v.x, 2.0) + pow(u.y - v.y, 2.0) + pow(u.y - v.y, 2.0));
 }
 
 void Volume::PrintSlice(int depth) {
@@ -53,7 +119,7 @@ int Volume::Index(int x, int y, int z) {
   return x + y * this->size_.x * this->size_.z + z * this->size_.x;
 }
 
-int SaveVolume(const char *outputName, char *image, int width, int height) {
+int Volume::SaveVolume(const char *outputName, unsigned char *image, int width, int height) {
   struct jpeg_compress_struct cinfo;
 	struct jpeg_error_mgr jerr;
   JSAMPROW row_pointer[1];
@@ -67,8 +133,8 @@ int SaveVolume(const char *outputName, char *image, int width, int height) {
   jpeg_create_compress(&cinfo);
   jpeg_stdio_dest(&cinfo, outfile);
 
-  cinfo.image_width = imageWidth;
-  cinfo.image_height = imageHeight;
+  cinfo.image_width = width;
+  cinfo.image_height = height;
   cinfo.input_components = 3;
   cinfo.in_color_space = JCS_RGB;
 
