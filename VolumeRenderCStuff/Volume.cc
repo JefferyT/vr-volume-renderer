@@ -40,23 +40,52 @@ vec3 Volume::GetColor(vec3 position, vec3 direction) {
   float val = TriLinearInterpolation({position.x, position.y, 200.0});
   vec3 color;
   vec4 lookup = LookupTable(val);
-  color = {lookup.x * 255.0, lookup.y * 255.0, lookup.z * 255.0};
+  color = {lookup.x * 255.0f, lookup.y * 255.0f, lookup.z * 255.0f};
   return color;
 }
 
 vec4 Volume::LookupTable(float value) {
   vec4 ret = {0, 0, 0, 0};
-  if (value <= 142.677) {
-    return ret;
-  } else if (value <= 145.016) {
-    float percent = ((value - 142.677) / (145.016 - 142.677));
-    ret.w = (percent * (0.116071 - 0.0) + 0.0);
-
-    ret.x = percent * ();
-    ret.y = 0;
-    ret.z = ;
-
+  vector<float> scalarOpacity =
+  {-2048, 0,
+    142.677, 0,
+    145.016, 0.116071,
+    192.174, 0.5625,
+    217.24, 0.776786,
+    384.347, 0.830357,
+    3661, 0.830357};
+  vector<float> colorTransfer = 
+  {-2048, 0, 0, 0,
+  142.677, 0, 0, 0,
+  145.016, 0.615686, 0, 0.0156863,
+  192.174, 0.909804, 0.454902, 0,
+  217.24, 0.972549, 0.807843, 0.611765,
+  384.347, 0.909804, 0.909804, 1,
+  3661, 1, 1, 1};
+  int count = 0;
+  while (value > scalarOpacity[count * 2] && count < 7) {
+    count++;
   }
+  if (count == 7) {
+    ret = {1, 1, 1, 1};
+  } else if (count == 0) {
+    ret = {0, 0, 0, 0};
+  } else {
+    float percent = (value - scalarOpacity[(count - 1) * 2]) / (scalarOpacity[(count) * 2])
+                  - scalarOpacity[(count - 1) * 2];
+    ret.w = (scalarOpacity[(count) * 2 + 1] - scalarOpacity[(count - 1) * 2 + 1])
+            * percent + (scalarOpacity[(count) * 2 + 1] - scalarOpacity[(count - 1) * 2 + 1]);
+    
+    ret.x = (colorTransfer[(count) * 4 + 1] - colorTransfer[(count - 1) * 4 + 1])
+            * percent + (colorTransfer[(count) * 4 + 1] - colorTransfer[(count - 1) * 4 + 1]);
+    
+    ret.y = (colorTransfer[(count) * 4 + 2] - colorTransfer[(count - 1) * 4 + 2])
+            * percent + (colorTransfer[(count) * 4 + 2] - colorTransfer[(count - 1) * 4 + 2]);
+    
+    ret.z = (colorTransfer[(count) * 4 + 3] - colorTransfer[(count - 1) * 4 + 3])
+            * percent + (colorTransfer[(count) * 4 + 3] - colorTransfer[(count - 1) * 4 + 3]);
+  }
+  return ret;
 }
 
 float Volume::TriLinearInterpolation(vec3 point) {
