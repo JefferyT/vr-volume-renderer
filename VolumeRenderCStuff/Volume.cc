@@ -37,18 +37,26 @@ int Volume::RenderVolume(const char *outputName, int imageWidth, int imageHeight
 }
 
 vec3 Volume::GetColor(vec3 position, vec3 direction) {
-  float val = TriLinearInterpolation({position.x, position.y, 200});
+  float val = TriLinearInterpolation({position.x, position.y, 200.0});
   vec3 color;
-  if (val >= 200) {
-    color = {255, 255, 255};
-  } else if (val < 200 && val > 0) {
-    color = {170, 130, 110};
-  } else if (val == 0) {
-    color = {50, 50, 150};
-  } else {
-    color = {0, 0, 0};
-  }
+  vec4 lookup = LookupTable(val);
+  color = {lookup.x * 255.0, lookup.y * 255.0, lookup.z * 255.0};
   return color;
+}
+
+vec4 Volume::LookupTable(float value) {
+  vec4 ret = {0, 0, 0, 0};
+  if (value <= 142.677) {
+    return ret;
+  } else if (value <= 145.016) {
+    float percent = ((value - 142.677) / (145.016 - 142.677));
+    ret.w = (percent * (0.116071 - 0.0) + 0.0);
+
+    ret.x = percent * ();
+    ret.y = 0;
+    ret.z = ;
+
+  }
 }
 
 float Volume::TriLinearInterpolation(vec3 point) {
