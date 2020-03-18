@@ -40,6 +40,7 @@ class Volume {
   Volume(const char *inputName, int width, int height, int depth);
   int RenderVolume(const char *outputName, int imageWidth, int imageHeight);
   void PrintSlice(int depth);
+  int RenderDefault(const char *outputName);
   
  private:
   // gets the index of the volume
@@ -51,6 +52,7 @@ class Volume {
   // gets the color for a certain ray
   vec3 GetColor(vec3 position, vec3 direction, float stepSize);
   vec4 LookupTable(float value);
+  vec3 TestLookupTable(float value);
   int SaveVolume(const char *outputName, unsigned char *image, int width, int height);
   float Distance(vec3 u, vec3 v);
   vector<short> raw_volume_;

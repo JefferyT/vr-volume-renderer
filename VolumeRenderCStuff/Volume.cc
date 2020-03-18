@@ -26,7 +26,6 @@ int Volume::RenderVolume(const char *outputName, int imageWidth, int imageHeight
   float yStep = this->size_.y / (float) imageHeight;
   unsigned char *buf = new unsigned char[imageHeight * imageWidth * 3];
   for (int i = 0; i < imageWidth; i++) {
-//    cout << "row " << i << endl;
     for (int j = 0; j < imageHeight; j++) {
       vec3 curColor = GetColor({(float) i * xStep, (float) j * yStep, 0.0}, {0.0, 0.0, 1.0}, 1);
       buf[(i + j * imageWidth) * 3] = (unsigned char) curColor.x;
@@ -35,6 +34,30 @@ int Volume::RenderVolume(const char *outputName, int imageWidth, int imageHeight
     }
   }
   return SaveVolume(outputName, buf, imageWidth, imageHeight);
+}
+
+int Volume::RenderDefault(const char *outputName) {
+  unsigned char *buf = new unsigned char[512 * 406 * 3];
+  for (int i = 0; i < 512; i++) {
+    for (int j = 0; j < 406; j++) {
+      vec3 curColor = TestLookupTable((float)(raw_volume_[Index(i, j, 256)]));
+      buf[(i + j * 512) * 3] = (unsigned char) curColor.x;
+      buf[(i + j * 512) * 3 + 1] = (unsigned char) curColor.z;
+      buf[(i + j * 512) * 3 + 2] = (unsigned char) curColor.y;
+    }
+  }
+  
+  return SaveVolume(outputName, buf, 512, 406);
+}
+
+vec3 Volume::TestLookupTable(float val) {
+  if (val < 0) {
+    return {0, 0, 0};
+  }
+  if (val > 500.0) {
+    val = 500.0;
+  }
+  return {255.0f * (val / 500.0f), 255.0f * (val / 500.0f), 255.0f * (val / 500.0f)};
 }
 
 vec3 Volume::GetColor(vec3 position, vec3 direction, float stepSize) {
@@ -185,14 +208,14 @@ void Volume::PrintSlice(int depth) {
 }
 
 int Volume::Index(int x, int y, int z) {
-  return x + y * this->size_.x * this->size_.z + z * this->size_.x;
+  return x + y * (int) this->size_.x + z * (int) this->size_.x * (int)this->size_.y;
 }
 
 int Volume::SaveVolume(const char *outputName, unsigned char *image, int width, int height) {
 /*  FILE *fp = fopen("image.dat", "wb");
   fwrite(image, sizeof(char), width * height * 3, fp);
   fclose(fp);
-*/  
+*/
   struct jpeg_compress_struct cinfo;
 	struct jpeg_error_mgr jerr;
   JSAMPROW row_pointer[1];
