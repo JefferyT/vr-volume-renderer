@@ -56,19 +56,7 @@ public class ReadAndBuildData : MonoBehaviour
 
             }
         }
-        /*
-        using (BinaryReader b = new BinaryReader(File.Open(path, FileMode.Open)))
-        {
-            int pos = 0;
-            int length = (int)b.BaseStream.Length;
-            while (pos < length)
-            {
-                int v = b.ReadInt16();
-                Console.WriteLine(v);
-                pos += sizeof(int);
-            }
-        }
-        */
+        
     }
 
     Texture3D CreateTexture3D(int x, int y, int z)
@@ -113,10 +101,11 @@ public class ReadAndBuildData : MonoBehaviour
                     float a1 = opacityDic.Values[i];
                     Vector3 rgb2 = colorDic.Values[i + 1];
                     float a2 = opacityDic.Values[i + 1];
-                    rgb1 *= ((float)value - opacityDic.Keys[i]) / (opacityDic.Keys[i + 1] - opacityDic.Keys[i]);
-                    a1 *= ((float)value - opacityDic.Keys[i]) / (opacityDic.Keys[i + 1] - opacityDic.Keys[i]);
-                    rgb2 *= (opacityDic.Keys[i + 1] - (float)value) / (opacityDic.Keys[i + 1] - opacityDic.Keys[i]);
-                    a2 *= (opacityDic.Keys[i + 1] - (float)value) / (opacityDic.Keys[i + 1] - opacityDic.Keys[i]);
+                    float percent = (value - opacityDic.Values[i]) / (opacityDic.Values[i + 1] - opacityDic.Values[i+1]);
+                    rgb1 *= percent;
+                    a1 *= percent;
+                    rgb2 *= 1.0f - percent;
+                    a2 *= 1.0f - percent;
                     return new Color(rgb1.x + rgb2.x, rgb1.y + rgb2.y, rgb1.z + rgb2.z, a1 + a2);
 
                 }
