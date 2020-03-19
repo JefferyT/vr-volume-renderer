@@ -182,7 +182,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
+  m_BackGroundColor: {r: 0.6792453, g: 0.6792453, b: 0.6792453, a: 1}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
@@ -318,7 +318,7 @@ MonoBehaviour:
     type: 3}
   originalVolume: {fileID: 1629574067}
   rightController: {fileID: 0}
-  width: 0.1
+  width: 0.2
 --- !u!4 &1120833541
 Transform:
   m_ObjectHideFlags: 0

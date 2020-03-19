@@ -33,6 +33,7 @@ namespace VolumeRendering {
             if (mode == 4)
             {
                 // a lot of them is not working, overriding built-in keys?
+                Debug.Log(mainVolume.sliceXMin);
                 if (Input.GetKeyDown(KeyCode.A)) mainVolume.sliceXMin -= 0.1f;
                 if (Input.GetKeyDown(KeyCode.D)) mainVolume.sliceXMin += 0.1f;
 
@@ -50,6 +51,7 @@ namespace VolumeRendering {
 
                 if (Input.GetKeyDown(KeyCode.R)) mainVolume.sliceZMax -= 0.1f;
                 if (Input.GetKeyDown(KeyCode.Y)) mainVolume.sliceZMax += 0.1f;
+                checkSlicingBound();
             }
 
             if (mode != 2) mode2DefaultSet = false;
@@ -88,7 +90,6 @@ namespace VolumeRendering {
                     {
                         GameObject go = Instantiate(volumePrefab, new Vector3(Random.Range(1, 5), Random.Range(1, 5), Random.Range(1, 5)), Quaternion.identity);
                         VolumeRendering volume = go.GetComponent<VolumeRendering>();
-                        float x, y, z;
 
                         Vector3 controller_local = mainVolume.transform.InverseTransformPoint(rightController.transform.position);
                         
@@ -101,6 +102,16 @@ namespace VolumeRendering {
                 }
             }
 
+        }
+
+        void checkSlicingBound()
+        {
+            mainVolume.sliceXMin = Mathf.Max(mainVolume.sliceXMin, 0);
+            mainVolume.sliceYMin = Mathf.Max(mainVolume.sliceYMin, 0);
+            mainVolume.sliceZMin = Mathf.Max(mainVolume.sliceZMin, 0);
+            mainVolume.sliceXMax = Mathf.Min(mainVolume.sliceXMax, 1);
+            mainVolume.sliceYMax = Mathf.Min(mainVolume.sliceYMax, 1);
+            mainVolume.sliceZMax = Mathf.Min(mainVolume.sliceZMax, 1);
         }
 
         void checkControllerBound(ref Vector3 cl, float w)
