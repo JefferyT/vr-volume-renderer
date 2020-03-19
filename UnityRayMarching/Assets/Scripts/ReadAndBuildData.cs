@@ -59,7 +59,28 @@ public class ReadAndBuildData
     {
         for (int i = 0; i < opacityDic.Count; i++)
         {
+            if ((value <= opacityDic.Keys[i] && i == 0) || (value >= opacityDic.Keys[i] && i == opacityDic.Count - 1))
+            {
+                Vector3 rgb = colorDic.Values[i];
+                float a = opacityDic.Values[i];
+                return new Color(rgb.x, rgb.y, rgb.z, a);
+            } else
+            {
+                if (value >= opacityDic.Keys[i] && value <= opacityDic.Keys[i + 1])
+                {
+                    // interpolate between two pairs
+                    Vector3 rgb1 = colorDic.Values[i];
+                    float a1 = opacityDic.Values[i];
+                    Vector3 rgb2 = colorDic.Values[i + 1];
+                    float a2 = opacityDic.Values[i + 1];
+                    rgb1 *= ((float)value - opacityDic.Keys[i]) / (opacityDic.Keys[i + 1] - opacityDic.Keys[i]);
+                    a1 *= ((float)value - opacityDic.Keys[i]) / (opacityDic.Keys[i + 1] - opacityDic.Keys[i]);
+                    rgb2 *= (opacityDic.Keys[i + 1] - (float)value) / (opacityDic.Keys[i + 1] - opacityDic.Keys[i]);
+                    a2 *= (opacityDic.Keys[i + 1] - (float)value) / (opacityDic.Keys[i + 1] - opacityDic.Keys[i]);
+                    return new Color(rgb1.x + rgb2.x, rgb1.y + rgb2.y, rgb1.z + rgb2.z, a1 + a2);
 
+                }
+            }
         }
         return new Color();
     }
