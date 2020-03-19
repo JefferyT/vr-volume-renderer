@@ -43,7 +43,7 @@ namespace VolumeRendering
         public virtual void Start()
         {
             material = new Material(shader);
-            this.width = 0.5f;
+            this.width = 1f;
 
             //BuildMesh(0.5f);
             //GetComponent<MeshCollider>().sharedMesh = mesh;
@@ -124,7 +124,8 @@ namespace VolumeRendering
         // pass in abcd that represent a plane in 3d, and a controller
         void buildPlane(ref float a, ref float b, ref float c, ref float d, GameObject controller)
         {
-            Vector3 position = controller == null ? Vector3.zero : controller.transform.position; // world space
+            if (controller == null) return;
+            Vector3 position =  controller.transform.position; // world space
             Quaternion quaternion = controller.transform.rotation;
             float theta = (float) Math.Acos(quaternion.w) * 2;
             Vector3 v1 = new Vector3(quaternion.x, quaternion.y, quaternion.z);

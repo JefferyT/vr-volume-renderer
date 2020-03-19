@@ -66,7 +66,7 @@ float intersectScanPlane(float3 p) {
 }
 
 // these returns a value that is zero, or a positive number, handle slicing
-float sample_volume(float3 uv, float3 p)
+float4 sample_volume(float3 uv, float3 p)
 {
 
 	float dist_to_pointer = distance(uv, get_uv(_PointerPosition));
@@ -76,7 +76,7 @@ float sample_volume(float3 uv, float3 p)
 		local_intensity += 100 * plane_intensity;
 	}
 
-	float v = tex3D(_Volume, uv).r * local_intensity; // the main call that extract data from texture map
+	float4 v = tex3D(_Volume, uv).r * local_intensity; // the main call that extract data from texture map
 
 	float3 axis = mul(_AxisRotationMatrix, float4(p, 0)).xyz;
 	axis = get_uv(axis);
@@ -145,19 +145,20 @@ tnear = max(0.0, tnear);
 float3 start = ray.origin;
 float3 end = ray.origin + ray.dir * tfar;
 float dist = abs(tfar - tnear); // float dist = distance(start, end);
-float step_size = dist / float(ITERATIONS);
+float step_size = 0.01;// dist / float(ITERATIONS);
+float new_iter = dist / step_size;
 float3 ds = normalize(end - start) * step_size;
 
 float4 dst = float4(0, 0, 0, 0);
 float3 p = start; // starts in local space
 
 [unroll]
-for (int iter = 0; iter < ITERATIONS; iter++)
+for (float iter = 0; iter < new_iter; iter++)
 {
   float3 uv = get_uv(p);
-  float v = sample_volume(uv, p);
-  float4 src = float4(v, v, v, v);
-  src.a = 1.0f - pow((1.0f - src.a), step_size);
+  float4 v = sample_volume(uv, p);
+  float4 src = v;
+  src.a = 0.5 * src.a;
   src.rgb *= src.a * (1 - dst.a);
 
   // blend
