@@ -15,8 +15,8 @@ namespace VolumeRendering
     public class VolumeRendering : MonoBehaviour
     {
 
-        [SerializeField] protected Shader shader;
-        protected Material material;
+        [SerializeField] public Shader shader;
+        public Material material;
 
         [SerializeField] Color color = Color.white;
         [Range(0f, 1f)] public float threshold = 0.5f; 
@@ -24,7 +24,7 @@ namespace VolumeRendering
         [Range(0f, 1f)] public float sliceXMin = 0.0f, sliceXMax = 1.0f;
         [Range(0f, 1f)] public float sliceYMin = 0.0f, sliceYMax = 1.0f;
         [Range(0f, 1f)] public float sliceZMin = 0.0f, sliceZMax = 1.0f;
-        [Range(1f, 5f)] public float pointer_intensity = 2f;
+        [Range(0f, 5f)] public float pointer_intensity = 2f;
         [Range(0f, 0.1f)] public float plane_thickness = 0.05f;
         public Vector4 plane = new Vector4(0, 0, 0, 0);
 
@@ -32,31 +32,46 @@ namespace VolumeRendering
 
         public Texture volume;
         private Camera vrCam;
+        public bool isMain = true;
         private float width;
         public Mesh mesh;
         private GameObject rightController;
-        protected virtual void Start()
+        public void Awake()
+        {
+            
+        }
+        public virtual void Start()
         {
             material = new Material(shader);
             this.width = 0.5f;
 
-            BuildMesh(0.5f);
+            //BuildMesh(0.5f);
             //GetComponent<MeshCollider>().sharedMesh = mesh;
             vrCam = Camera.main;
         }
 
-        private Mesh BuildMesh (float width)
+        public Mesh BuildMesh (Vector3 pos, float width)
         {
-            mesh = Build(width);
+
+            
+            material = new Material(shader);
+            mesh = Build(pos, width);
             GetComponent<MeshFilter>().sharedMesh = mesh;
             GetComponent<MeshRenderer>().sharedMaterial = material;
+            updateMaterial();
+            if (!isMain)
+            {
+                Debug.Log(shader);
+                Debug.Log(volume);
+            }
+            
             return mesh;
         }
 
-        protected void Update()
+        void Update()
         {
             controllerUpdate();
-            updateMainMesh(true);
+            updateMainMesh();
             updateMaterial();
         }
 
@@ -74,12 +89,13 @@ namespace VolumeRendering
             material.SetVector("_PlaneScanPara", plane);
         }
 
-        void updateMainMesh(Boolean isMain)
+        void updateMainMesh()
         {
             // scaling is fucking this up
-            this.width = Vector3.Distance(this.transform.position, vrCam.transform.position) / Mathf.Sqrt(2f);
-            mesh = BuildMesh((float)Math.Min(width, 0.6) - 0.1f);
-           
+            if (isMain) {
+                this.width = Vector3.Distance(this.transform.position, vrCam.transform.position) / Mathf.Sqrt(2f);
+                mesh = BuildMesh(Vector3.zero, (float)Math.Min(width, 0.6) - 0.1f);
+            }
         }
 
         void controllerUpdate()
@@ -136,19 +152,17 @@ namespace VolumeRendering
             d = (-a * p1.x - b * p1.y - c * p1.z);
         }
         
-        Mesh Build(float width)
+        Mesh Build(Vector3 cl, float w)
         {
             var vertices = new Vector3[] {
-                new Vector3 (-width, -width, -width),
-                new Vector3 ( width, -width, -width),
-                new Vector3 ( width,  width, -width),
-                new Vector3 (-width,  width, -width),
-                new Vector3 (-width,  width,  width),
-                new Vector3 ( width,  width,  width),
-                new Vector3 ( width, -width,  width),
-                new Vector3 (-width, -width,  width),
-                
-
+                new Vector3 (cl.x - w, cl.y - w, cl.z - w),
+                new Vector3 (cl.x + w, cl.y - w, cl.z - w),
+                new Vector3 (cl.x + w, cl.y + w, cl.z - w),
+                new Vector3 (cl.x - w, cl.y + w, cl.z - w),
+                new Vector3 (cl.x - w, cl.y + w, cl.z + w),
+                new Vector3 (cl.x + w, cl.y + w, cl.z + w),
+                new Vector3 (cl.x + w, cl.y - w, cl.z + w),
+                new Vector3 (cl.x - w, cl.y - w, cl.z + w),
             };
             var triangles = new int[] {
                 0, 2, 1,

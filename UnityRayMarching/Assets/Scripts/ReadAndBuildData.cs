@@ -3,8 +3,9 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
-public class ReadAndBuildData
+public class ReadAndBuildData : MonoBehaviour
 {
 
     Texture3D texture;
@@ -29,9 +30,17 @@ public class ReadAndBuildData
         { 384.347f, new Vector3(0.909804f, 0.909804f, 1) },
         { 3661, new Vector3(1, 1, 1)},
     };
-    void main()
+    void Start()
     {
         readData();
+        Texture3D tex = CreateTexture3D(512, 512, 406);
+
+        AssetDatabase.CreateAsset(tex, "Assets/Texture/myTexture.asset");
+    }
+    
+    void Update()
+    {
+
     }
 
     void readData()
@@ -74,8 +83,9 @@ public class ReadAndBuildData
                 for (int k = 0; k < z; k++)
                 {
                     // get color from table
-                    Color c = new Color();
-                    colorArray[i * y * z + (j * z) + k] = c;
+                    int value = (int)data[i * y * z + j * z + k];
+                    Color c = lookUpColor(value);
+                    colorArray[i * y * z + j * z + k] = c;
                 }
             }
         }
