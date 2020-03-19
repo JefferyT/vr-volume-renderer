@@ -67,6 +67,8 @@ vec3 Volume::GetColor(vec3 position, vec3 direction, float stepSize) {
   int i = 0;
   while (cur.w <= 0.99 && curPos.x < this->size_.x && curPos.y < this->size_.y && curPos.z < this->size_.z ) {
     vec4 curColorOpacity = this->LookupTable(TriLinearInterpolation(curPos));
+    // float curOpacity = this->LookupTable(TriLinearInterpolation(curPos)).w;
+    // vec3 curColor = this->TestLookupTable(TriLinearInterpolation(curPos));
     curPos.x += direction.x * stepSize;
     curPos.y += direction.y * stepSize;
     curPos.z += direction.z * stepSize;
@@ -76,6 +78,11 @@ vec3 Volume::GetColor(vec3 position, vec3 direction, float stepSize) {
     cur.x += curColorOpacity.x * curColorOpacity.w * (1.0 - cur.w);
     cur.y += curColorOpacity.y * curColorOpacity.w * (1.0 - cur.w);
     cur.z += curColorOpacity.z * curColorOpacity.w * (1.0 - cur.w);
+
+    
+    // cur.x += curColor.x * curOpacity * (1.0 - cur.w);
+    // cur.y += curColor.y * curOpacity * (1.0 - cur.w);
+    // cur.z += curColor.z * curOpacity * (1.0 - cur.w);
 
     // new opacity
     cur.w += curColorOpacity.w * (1.0 - cur.w);
