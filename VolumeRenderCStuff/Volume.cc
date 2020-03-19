@@ -28,7 +28,8 @@ int Volume::RenderVolume(const char *outputName, int imageWidth, int imageHeight
   for (int i = 0; i < imageWidth; i++) {
     cout << i << endl;
     for (int j = 0; j < imageHeight; j++) {
-      vec3 curColor = GetColor({(float) i * xStep, (float) j * yStep, 0.0}, {0.0, 0.0, 1.0}, 0.4);
+      // vec3 curColor = GetColor({(float) i * xStep, (float) j * yStep, 0.0}, {0.0, 0.0, 1.0}, 1.25);
+      vec3 curColor = GetColor({(float) i * xStep, 0.0, (float) j * yStep}, {0.0, 1.0, 0.0}, 1.25);
       buf[(i + (imageHeight - j) * imageWidth) * 3] = (unsigned char) curColor.x;
       buf[(i + (imageHeight - j) * imageWidth) * 3 + 1] = (unsigned char) curColor.y;
       buf[(i + (imageHeight - j) * imageWidth) * 3 + 2] = (unsigned char) curColor.z;
@@ -52,13 +53,14 @@ int Volume::RenderDefault(const char *outputName) {
 }
 
 vec3 Volume::TestLookupTable(float val) {
+  float upper = 100.0;
   if (val < 0) {
     val = 0;
   }
-  if (val > 3600.0) {
-    val = 3600.0;
+  if (val > upper) {
+    val = upper;
   }
-  return {255.0f * (val / 3600.0f), 255.0f * (val / 3600.0f), 255.0f * (val / 3600.0f)};
+  return {255.0f * (val / upper), 255.0f * (val / upper), 255.0f * (val / upper)};
 }
 
 vec3 Volume::GetColor(vec3 position, vec3 direction, float stepSize) {
@@ -74,18 +76,21 @@ vec3 Volume::GetColor(vec3 position, vec3 direction, float stepSize) {
     curPos.z += direction.z * stepSize;
     
     // implement shader on these colors
+    
+    
     // new color
     cur.x += curColorOpacity.x * curColorOpacity.w * (1.0 - cur.w);
     cur.y += curColorOpacity.y * curColorOpacity.w * (1.0 - cur.w);
     cur.z += curColorOpacity.z * curColorOpacity.w * (1.0 - cur.w);
 
-    
+    // new opacity
+    cur.w += curColorOpacity.w * (1.0 - cur.w);
+
     // cur.x += curColor.x * curOpacity * (1.0 - cur.w);
     // cur.y += curColor.y * curOpacity * (1.0 - cur.w);
     // cur.z += curColor.z * curOpacity * (1.0 - cur.w);
 
-    // new opacity
-    cur.w += curColorOpacity.w * (1.0 - cur.w);
+    
 
     curPos.x += stepSize * (direction.x);
     curPos.y += stepSize * (direction.y);
@@ -134,8 +139,8 @@ vec4 Volume::LookupTable(float value) {
   } else if (count == 0) {
     ret = {0, 0, 0, 0};
   } else {
-    float percent = (value - scalarOpacity[(count - 1) * 2]) / (scalarOpacity[(count) * 2])
-                  - scalarOpacity[(count - 1) * 2];
+    float percent = (value - scalarOpacity[(count - 1) * 2]) / (scalarOpacity[(count) * 2]
+                  - scalarOpacity[(count - 1) * 2]);
     ret.w = (scalarOpacity[(count) * 2 + 1] - scalarOpacity[(count - 1) * 2 + 1])
             * percent + (scalarOpacity[(count) * 2 + 1] - scalarOpacity[(count - 1) * 2 + 1]);
     
