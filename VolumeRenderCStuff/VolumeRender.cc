@@ -18,6 +18,6 @@ int main(int argc, char** argv) {
     vol = new Volume("body.dat", 512, 512, 406);
   }
 
-  vol->RenderVolume("up.jpg", 512, 406);
+  vol->RenderVolume("through.jpg", 512, 406);
   //vol->RenderDefault("default.jpg");
 }
