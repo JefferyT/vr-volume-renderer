@@ -157,7 +157,7 @@ for (int iter = 0; iter < ITERATIONS; iter++)
   float3 uv = get_uv(p);
   float v = sample_volume(uv, p);
   float4 src = float4(v, v, v, v);
-  src.a = 1.0f - Mathf.Pow((1.0f - curColorOpacity.w), step_size);
+  src.a = 1.0f - pow((1.0f - src.a), step_size);
   src.rgb *= src.a * (1 - dst.a);
 
   // blend
