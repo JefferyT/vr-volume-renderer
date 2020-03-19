@@ -51,10 +51,9 @@ namespace VolumeRendering {
 
                 if (Input.GetKeyDown(KeyCode.R)) mainVolume.sliceZMax -= 0.1f;
                 if (Input.GetKeyDown(KeyCode.Y)) mainVolume.sliceZMax += 0.1f;
-                checkSlicingBound();
+                
             }
 
-            if (mode != 2) mode2DefaultSet = false;
             if (mode == 2)
             {
                 if (!mode2DefaultSet)
@@ -64,9 +63,12 @@ namespace VolumeRendering {
                 }
                 if (Input.GetKeyDown(KeyCode.Z)) mainVolume.pointer_intensity -= 0.5f;
                 if (Input.GetKeyDown(KeyCode.X)) mainVolume.pointer_intensity += 0.5f;
+            } else
+            {
+                mode2DefaultSet = false;
+                mainVolume.pointer_intensity = 0;
             }
 
-            if (mode != 3) mode3DefaultSet = false;
             if (mode == 3)
             {
                 if (!mode3DefaultSet)
@@ -78,6 +80,10 @@ namespace VolumeRendering {
                 // need intensity control
                 if (Input.GetKeyDown(KeyCode.C)) mainVolume.plane_thickness -= 0.01f;
                 if (Input.GetKeyDown(KeyCode.V)) mainVolume.plane_thickness += 0.01f;
+            } else
+            {
+                mode3DefaultSet = false;
+                mainVolume.plane_thickness = 0;
             }
 
             if (mode == 5)
@@ -102,9 +108,11 @@ namespace VolumeRendering {
                 }
             }
 
+            checkAllVolumeBound();
+
         }
 
-        void checkSlicingBound()
+        void checkAllVolumeBound()
         {
             mainVolume.sliceXMin = Mathf.Max(mainVolume.sliceXMin, 0);
             mainVolume.sliceYMin = Mathf.Max(mainVolume.sliceYMin, 0);
@@ -112,6 +120,21 @@ namespace VolumeRendering {
             mainVolume.sliceXMax = Mathf.Min(mainVolume.sliceXMax, 1);
             mainVolume.sliceYMax = Mathf.Min(mainVolume.sliceYMax, 1);
             mainVolume.sliceZMax = Mathf.Min(mainVolume.sliceZMax, 1);
+            if (mainVolume.plane_thickness < 0)
+            {
+                mainVolume.plane_thickness = 0;
+            } else if (mainVolume.plane_thickness > 0.1f)
+            {
+                mainVolume.plane_thickness = 0.1f;
+            }
+            if (mainVolume.pointer_intensity < 0)
+            {
+                mainVolume.pointer_intensity = 0;
+            }
+            else if (mainVolume.pointer_intensity > 5f)
+            {
+                mainVolume.pointer_intensity = 5f;
+            }
         }
 
         void checkControllerBound(ref Vector3 cl, float w)

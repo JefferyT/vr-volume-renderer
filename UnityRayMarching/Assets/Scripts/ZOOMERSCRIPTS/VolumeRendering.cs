@@ -24,7 +24,7 @@ namespace VolumeRendering
         [Range(0f, 1f)] public float sliceXMin = 0.0f, sliceXMax = 1.0f;
         [Range(0f, 1f)] public float sliceYMin = 0.0f, sliceYMax = 1.0f;
         [Range(0f, 1f)] public float sliceZMin = 0.0f, sliceZMax = 1.0f;
-        [Range(1f, 5f)] public float pointer_intensity = 2f;
+        [Range(0f, 5f)] public float pointer_intensity = 2f;
         [Range(0f, 0.1f)] public float plane_thickness = 0.05f;
         public Vector4 plane = new Vector4(0, 0, 0, 0);
 
