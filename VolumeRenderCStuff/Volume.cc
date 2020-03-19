@@ -26,8 +26,9 @@ int Volume::RenderVolume(const char *outputName, int imageWidth, int imageHeight
   float yStep = this->size_.y / (float) imageHeight;
   unsigned char *buf = new unsigned char[imageHeight * imageWidth * 3];
   for (int i = 0; i < imageWidth; i++) {
+    cout << i << endl;
     for (int j = 0; j < imageHeight; j++) {
-      vec3 curColor = GetColor({(float) i * xStep, (float) j * yStep, 0.0}, {0.0, 0.0, 1.0}, 1);
+      vec3 curColor = GetColor({(float) i * xStep, (float) j * yStep, 0.0}, {0.0, 0.0, 1.0}, 0.4);
       buf[(i + (imageHeight - j) * imageWidth) * 3] = (unsigned char) curColor.x;
       buf[(i + (imageHeight - j) * imageWidth) * 3 + 1] = (unsigned char) curColor.y;
       buf[(i + (imageHeight - j) * imageWidth) * 3 + 2] = (unsigned char) curColor.z;
@@ -85,10 +86,8 @@ vec3 Volume::GetColor(vec3 position, vec3 direction, float stepSize) {
     i++;
   }
   // cout << i << endl;
-  float val = TriLinearInterpolation({position.x, position.y, 200.0});
   vec3 color;
-  vec4 lookup = LookupTable(val);
-  color = {lookup.x * 255.0f, lookup.y * 255.0f, lookup.z * 255.0f};
+  color = {cur.x * 255.0f, cur.y * 255.0f, cur.z * 255.0f};
   if (color.x > 255.0f) {
     color.x = 255.0f;
   }
