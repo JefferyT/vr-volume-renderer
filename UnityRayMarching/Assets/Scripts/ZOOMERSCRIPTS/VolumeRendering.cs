@@ -33,7 +33,7 @@ namespace VolumeRendering
         public Texture volume;
         private Camera vrCam;
         private float width;
-        private Mesh mesh;
+        public Mesh mesh;
         private GameObject rightController;
         protected virtual void Start()
         {

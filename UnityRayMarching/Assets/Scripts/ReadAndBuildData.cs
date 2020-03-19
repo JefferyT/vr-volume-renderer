@@ -9,6 +9,8 @@ public class ReadAndBuildData
 
     Texture3D texture;
     const string path = @"C:\Users\Husky Maker\Desktop\Xiao\vr-volume-rendering\VolumeRenderCStuff\body.dat";
+    
+
     SortedList<float, float> opacityDic = new SortedList<float, float>() {
         { -2048, 0 },
         { 142.677f, 0 },
@@ -29,7 +31,22 @@ public class ReadAndBuildData
     };
     void main()
     {
-        
+        readData();
+    }
+
+    void readData()
+    {
+        using (BinaryReader b = new BinaryReader(File.Open(path, FileMode.Open)))
+        {
+            int pos = 0;
+            int length = (int)b.BaseStream.Length;
+            while (pos < length)
+            {
+                int v = b.ReadInt16();
+                Console.WriteLine(v);
+                pos += sizeof(int);
+            }
+        }
     }
 
     Texture3D CreateTexture3D(int x, int y, int z)
