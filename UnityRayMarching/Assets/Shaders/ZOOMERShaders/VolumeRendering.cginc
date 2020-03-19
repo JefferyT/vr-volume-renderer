@@ -157,8 +157,8 @@ fixed4 frag(v2f i) : SV_Target
     float3 uv = get_uv(p);
     float v = sample_volume(uv, p);
     float4 src = float4(v, v, v, v);
-    src.a = 1.0f - Mathf.Pow((1.0f - curColorOpacity.w), step_size);
-    src.rgb *= src.a * (1 - dst.a);
+    src.a *= 0.5;
+    src.rgb *= src.a;
 
     // blend
     dst = (1.0 - dst.a) * src + dst;
