@@ -28,7 +28,7 @@ int Volume::RenderVolume(const char *outputName, int imageWidth, int imageHeight
   for (int i = 0; i < imageWidth; i++) {
     cout << i << endl;
     for (int j = 0; j < imageHeight; j++) {
-      vec3 curColor = GetColor({(float) i * xStep, (float) j * yStep, 0.0}, {0.0, 0.0, 1.0}, 2.0);
+      vec3 curColor = GetColor({(float) i * xStep, (float) j * yStep, 0.0}, {0.0, 0.0, 1.0}, 2.5);
       // vec3 curColor = GetColor({(float) i * xStep, 0.0, (float) j * yStep}, {0.0, 1.0, 0.0}, 1.25);
       buf[(i + (imageHeight - j) * imageWidth) * 3] = (unsigned char) curColor.x;
       buf[(i + (imageHeight - j) * imageWidth) * 3 + 1] = (unsigned char) curColor.y;
