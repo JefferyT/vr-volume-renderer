@@ -87,6 +87,8 @@ namespace VolumeRendering
             material.SetFloat("_PointerIntensity", pointer_intensity);
             material.SetFloat("_ThicknessPlane", plane_thickness);
             material.SetVector("_PlaneScanPara", plane);
+            Vector3 controller_local_coord = this.transform.InverseTransformPoint(rightController.transform.position);
+            material.SetVector("_PointerPosition", controller_local_coord);
         }
 
         void updateMainMesh()
@@ -100,13 +102,6 @@ namespace VolumeRendering
 
         void controllerUpdate()
         {
-            Vector3 rightPosition = InputTracking.GetLocalPosition(XRNode.RightHand);
-            if (rightPosition != null)
-            {
-                Vector3 controller_local_coord = this.transform.InverseTransformPoint(rightPosition);
-                material.SetVector("_PointerPosition", controller_local_coord);
-            }
-
             //try
             //{
             //    Debug.Log(rightController.transform.position + " " + rightController.transform.rotation);
