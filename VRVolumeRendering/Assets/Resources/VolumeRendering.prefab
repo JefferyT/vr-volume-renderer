@@ -107,7 +107,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e57a14491bc6c5489bad45374141d53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shader: {fileID: 4800000, guid: fdebbb52ba73ede45ac58dbdf21f5feb, type: 3}
+  shader: {fileID: 4800000, guid: 5d3c07ea7e9a880429cb300d726f3070, type: 3}
+  material: {fileID: 0}
   color: {r: 1, g: 1, b: 1, a: 1}
   threshold: 0.5
   intensity: 1.5
@@ -121,7 +122,9 @@ MonoBehaviour:
   plane_thickness: 0.05
   plane: {x: 0, y: 0, z: 0, w: 0}
   axis: {x: 0, y: 0, z: 0, w: 1}
-  volume: {fileID: 11700000, guid: 1a553f4a3ed627541959494c4e64476d, type: 2}
+  volume: {fileID: 11700000, guid: 6e9aca8612d91b844b827e0fcb72339d, type: 2}
+  isMain: 1
+  mesh: {fileID: 0}
 --- !u!114 &7954851936372975617
 MonoBehaviour:
   m_ObjectHideFlags: 0

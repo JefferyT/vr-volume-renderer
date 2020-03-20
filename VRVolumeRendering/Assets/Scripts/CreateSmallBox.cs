@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 namespace VolumeRendering
 {
     public class CreateSmallBox : MonoBehaviour
@@ -8,9 +9,16 @@ namespace VolumeRendering
         public GameObject originalVolume;
         public GameObject rightController;
         public float width = 1f;
+        ControlManager controller;
+        Queue myStack = new Queue();
+
+        void Awake()
+        {
+            controller = GetComponent<ControlManager>();
+        }
         void Start()
         {
-
+            
         }
 
         // Update is called once per frame
@@ -18,11 +26,13 @@ namespace VolumeRendering
         {
             if (rightController == null) rightController = GameObject.Find("Right_Right OpenVR Controller");
 
-            if (rightController != null)
+            if (rightController != null && controller.mode == 5)
             {
                 if (Input.GetKeyDown(KeyCode.C))
                 {
+                    controller.numClones++;
                     GameObject go = Instantiate(volumePrefab, new Vector3(Random.Range(1, 5), Random.Range(1, 5), Random.Range(1, 5)), Quaternion.identity);
+                    myStack.Enqueue(go);
                     VolumeRendering volume = go.GetComponent<VolumeRendering>();
                     float x, y, z;
                     
@@ -53,6 +63,15 @@ namespace VolumeRendering
                     //volume.sliceZMax = z + width; volume.sliceZMin = z - width;
                     //checkBound(ref volume.sliceZMin, ref volume.sliceZMax);
 
+                }
+                if (Input.GetKeyDown(KeyCode.D))
+                {
+                    if(myStack.Count > 0)
+                    {
+                        GameObject go = (GameObject)myStack.Dequeue();
+                        Destroy(go.gameObject);
+                        controller.numClones--;
+                    }
                 }
             }
         }

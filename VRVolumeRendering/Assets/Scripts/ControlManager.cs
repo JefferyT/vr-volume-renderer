@@ -89,26 +89,26 @@ namespace VolumeRendering {
 
             if (mode == 5)
             {
-                if (rightController == null) rightController = GameObject.Find("Right_Right OpenVR Controller");
+                //if (rightController == null) rightController = GameObject.Find("Right_Right OpenVR Controller");
 
-                if (rightController != null)
-                {
-                    if (Input.GetKeyDown(KeyCode.Space))
-                    {
-                        GameObject go = Instantiate(volumePrefab, new Vector3(Random.Range(1, 5), Random.Range(1, 5), Random.Range(1, 5)), Quaternion.identity);
-                        VolumeRendering volume = go.GetComponent<VolumeRendering>();
+                //if (rightController != null)
+                //{
+                //    if (Input.GetKeyDown(KeyCode.Space))
+                //    {
+                //        GameObject go = Instantiate(volumePrefab, new Vector3(Random.Range(1, 5), Random.Range(1, 5), Random.Range(1, 5)), Quaternion.identity);
+                //        VolumeRendering volume = go.GetComponent<VolumeRendering>();
 
-                        Vector3 controller_local = mainVolume.transform.InverseTransformPoint(rightController.transform.position);
+                //        Vector3 controller_local = mainVolume.gameObject.transform.InverseTransformPoint(rightController.transform.position);
                         
-                        volume.intensity = 2;
-                        volume.isMain = false;
-                        checkControllerBound(ref controller_local, width);
-                        volume.BuildMesh(controller_local, width);
-                        numClones++;
+                //        volume.intensity = 2;
+                //        volume.isMain = false;
+                //        checkControllerBound(ref controller_local, width);
+                //        volume.BuildMesh(controller_local, width);
+                //        numClones++;
                         
 
-                    }
-                }
+                //    }
+                //}
             } else
             {
                 // need to destroy all clones instance

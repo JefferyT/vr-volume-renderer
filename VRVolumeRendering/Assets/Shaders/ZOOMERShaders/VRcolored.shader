@@ -1,4 +1,4 @@
-﻿Shader "Custom/NewSurfaceShader"
+﻿Shader "Custom/VRcolored"
 {
 	Properties
 	{
@@ -27,7 +27,7 @@
 				CGPROGRAM
 
 		  #define ITERATIONS 100
-				#include "./New.cginc"
+				#include "./VRcolored.cginc"
 				#pragma vertex vert
 				#pragma fragment frag
 
