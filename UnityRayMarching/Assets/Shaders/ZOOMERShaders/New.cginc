@@ -153,7 +153,7 @@ float4 dst = float4(0, 0, 0, 0);
 float3 p = start; // starts in local space
 
 [unroll]
-for (float iter = 0; iter < new_iter; iter++)
+for (int iter = 0; iter < ITERATIONS; iter++)
 {
   float3 uv = get_uv(p);
   float4 v = sample_volume(uv, p);

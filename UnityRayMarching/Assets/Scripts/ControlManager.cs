@@ -13,6 +13,7 @@ namespace VolumeRendering {
         public GameObject volumePrefab;
         public GameObject rightController;
         public float width = 1f;
+        public int numClones = 0;
 
         // Start is called before the first frame update
         void Start()
@@ -103,9 +104,15 @@ namespace VolumeRendering {
                         volume.isMain = false;
                         checkControllerBound(ref controller_local, width);
                         volume.BuildMesh(controller_local, width);
+                        numClones++;
+                        
 
                     }
                 }
+            } else
+            {
+                // need to destroy all clones instance
+                numClones = 0;
             }
 
             checkAllVolumeBound();
