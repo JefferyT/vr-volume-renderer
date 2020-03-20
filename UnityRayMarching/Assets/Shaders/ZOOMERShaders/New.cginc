@@ -76,7 +76,7 @@ float4 sample_volume(float3 uv, float3 p)
 		local_intensity += 100 * plane_intensity;
 	}
 
-	float4 v = tex3D(_Volume, uv).r * local_intensity; // the main call that extract data from texture map
+	float4 v = tex3D(_Volume, uv) * local_intensity; // the main call that extract data from texture map
 
 	float3 axis = mul(_AxisRotationMatrix, float4(p, 0)).xyz;
 	axis = get_uv(axis);

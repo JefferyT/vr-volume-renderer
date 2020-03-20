@@ -102,12 +102,15 @@ public class ReadAndBuildData : MonoBehaviour
                     Vector3 rgb2 = colorDic.Values[i + 1];
                     float a2 = opacityDic.Values[i + 1];
                     float percent = (value - opacityDic.Values[i]) / (opacityDic.Values[i + 1] - opacityDic.Values[i+1]);
-                    rgb1 *= percent;
+                    rgb1.x *= percent;
+                    rgb1.y *= percent;
+                    rgb1.z *= percent;
                     a1 *= percent;
-                    rgb2 *= 1.0f - percent;
+                    rgb2.x *= 1.0f - percent;
+                    rgb2.y *= 1.0f - percent;
+                    rgb2.z *= 1.0f - percent;
                     a2 *= 1.0f - percent;
                     return new Color(rgb1.x + rgb2.x, rgb1.y + rgb2.y, rgb1.z + rgb2.z, a1 + a2);
-
                 }
             }
         }
