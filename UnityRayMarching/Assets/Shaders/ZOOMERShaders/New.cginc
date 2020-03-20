@@ -145,8 +145,8 @@ tnear = max(0.0, tnear);
 float3 start = ray.origin;
 float3 end = ray.origin + ray.dir * tfar;
 float dist = abs(tfar - tnear); // float dist = distance(start, end);
-float step_size = 0.01;// dist / float(ITERATIONS);
-float new_iter = dist / step_size;
+float step_size = dist / float(ITERATIONS);
+// float new_iter = dist / step_size;
 float3 ds = normalize(end - start) * step_size;
 
 float4 dst = float4(0, 0, 0, 0);
@@ -158,7 +158,7 @@ for (float iter = 0; iter < new_iter; iter++)
   float3 uv = get_uv(p);
   float4 v = sample_volume(uv, p);
   float4 src = v;
-  src.a = 0.5 * src.a;
+  src.a *= 0.5;
   src.rgb *= src.a * (1 - dst.a);
 
   // blend
