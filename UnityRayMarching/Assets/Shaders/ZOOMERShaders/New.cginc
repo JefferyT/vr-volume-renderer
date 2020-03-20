@@ -149,6 +149,7 @@ float step_size = dist / float(ITERATIONS);
 // float new_iter = dist / step_size;
 float3 ds = normalize(end - start) * step_size;
 
+// new color
 float4 dst = float4(0, 0, 0, 0);
 float3 p = start; // starts in local space
 
@@ -159,7 +160,7 @@ for (int iter = 0; iter < ITERATIONS; iter++)
   float4 v = sample_volume(uv, p);
   float4 src = v;
   src.a *= 0.5;
-  src.rgb *= src.a * (1 - dst.a);
+  src.rgb *= src.a;
 
   // blend
   dst = (1.0 - dst.a) * src + dst;
