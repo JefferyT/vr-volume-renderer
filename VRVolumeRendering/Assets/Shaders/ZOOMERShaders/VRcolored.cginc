@@ -7,6 +7,10 @@
 #define ITERATIONS 100
 #endif
 
+#ifndef PI
+#define PI 3.1415926f
+#endif
+
 half4 _Color;
 sampler3D _Volume;
 half _Intensity, _Threshold;
@@ -57,12 +61,44 @@ float intersectScanPlane(float3 p) {
 	b = plane.y;
 	c = plane.z;
 	d = plane.a;
-	float res = (a * p.x + b * p.y + c * p.z + d) / (sqrt(pow(a, 2) + pow(b, 2) + pow(c, 2)));
-	if (abs(res) > _ThicknessPlane) {
+	float dis2plane = (a * p.x + b * p.y + c * p.z + d) / (sqrt(pow(a, 2) + pow(b, 2) + pow(c, 2)));
+	return dis2plane;
+	/*if (abs(res) > _ThicknessPlane) {
 		return 0;
 	}
-	return exp(_ThicknessPlane - abs(res)) - 1.0;
+	return exp(_ThicknessPlane - abs(res)) - 1.0;*/
 
+}
+
+// mode 3.5, return 1 or 0 indicating if the part should be shown
+float planeScanEliminate(float3 p) 
+{
+	// everything should be in object space
+	float4 plane = _PlaneScanPara;
+	float a, b, c, d;
+	a = plane.x;
+	b = plane.y;
+	c = plane.z;
+	d = plane.a;
+
+	//float3 frag2centerD = p - float3(0, 0, 0); // direction
+	//float frag2centerL = distance(p, float3(0, 0, 0)); // length
+	//float dis2plane = d / (sqrt(pow(a, 2) + pow(b, 2) + pow(c, 2)));
+	//float theta = acos(dot(plane.xyz, frag2centerD) / (dis2plane * frag2centerL));
+	//if (theta == 0) return 1; //line parallel with the plane, so do nothing
+	//if (theta > (PI / 2.0f)) return 1;; // get the smaller angle
+	//float center2intersection = dis2plane / cos(theta);
+	////return 0 : 1 ? frag2centerL > center2intersection;
+	//if (frag2centerL > center2intersection) return 0;
+	//return 1;
+	float3 v = p - float3(0, 0, 0);
+	float t = -d / (a * v.x + b * v.y + c * v.z);
+	if (t < 0 || t > 1) {
+		return 1;
+	}
+	return 0;
+
+	
 }
 
 // these returns a value that is zero, or a positive number, handle slicing
@@ -71,7 +107,13 @@ float4 sample_volume(float3 uv, float3 p)
 
 	float dist_to_pointer = distance(uv, get_uv(_PointerPosition));
 	float local_intensity = _Intensity + max(0.0, _PointerIntensity - (pow(dist_to_pointer * 10, 2)));
-	float plane_intensity = intersectScanPlane(p);
+	float dis2plane = intersectScanPlane(p);
+	float plane_scan_eliminate = planeScanEliminate(p);
+	float plane_intensity = 0;
+	if (abs(dis2plane) <= _ThicknessPlane) {
+		plane_intensity = exp(_ThicknessPlane - abs(dis2plane)) - 1.0;
+	}
+	
 	if (plane_intensity) {
 		local_intensity += 100 * plane_intensity;
 	}
@@ -83,7 +125,7 @@ float4 sample_volume(float3 uv, float3 p)
 	float min = step(_SliceMin.x, axis.x) * step(_SliceMin.y, axis.y) * step(_SliceMin.z, axis.z);
 	float max = step(axis.x, _SliceMax.x) * step(axis.y, _SliceMax.y) * step(axis.z, _SliceMax.z);
 
-	return v * min * max;
+	return v * min * max * plane_scan_eliminate;
 }
 
 bool outside(float3 uv)
